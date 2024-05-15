@@ -1,0 +1,2 @@
+Objeto.property = { a: 2 };
+Objeto["a"]

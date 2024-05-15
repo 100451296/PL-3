@@ -1,0 +1,12 @@
+{
+"this is": "AJSON",
+keys_sometimes_dont_need_quotes: "values always do",
+"you can nest other AJSON": {
+  _and_have_other_types_like: 10000,
+  or: 12.123,
+  "another": 33 <= 0xAA,
+  yet_another: NULL
+  }
+}
+
+type NestedObject = { "this is": character, prop2: int, "prop3": boolean};

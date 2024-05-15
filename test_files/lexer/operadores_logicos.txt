@@ -1,0 +1,9 @@
+a && b
+c || d
+!e
+a && !b
+!c || d
+!true
+false || true
+(a && b) || (c && d)
+!((e || f) && !g)

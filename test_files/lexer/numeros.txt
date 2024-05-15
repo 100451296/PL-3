@@ -1,0 +1,35 @@
+
+// Números enteros en base decimal
+0
+10
+420
+-12
+-999
+
+// Números enteros en base binaria
+0b101
+0B110110
+
+// Números enteros en base octal
+0712
+0332
+01121
+
+// Números enteros en base hexadecimal
+0XED13
+0xAA
+0Xfb
+0x00F1
+
+// Números reales en notación con punto decimal
+0.1289
+.12
+-100.001
+50.
+
+// Números reales en notación científica
+10e-1
+.1E10
+5E2
+4e-2
+9.87e1

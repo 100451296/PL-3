@@ -1,0 +1,72 @@
+type Circle = { cx: float, cy: float, radio: float, color: character };
+type Square = { side: float, color: character };
+
+let circle: Circle = {
+  cx: 0.,
+  cy: 0.,
+  radio: 10.2,
+  color: 'r',
+};
+
+let circle: Circle, circle2 : Circle = {
+  cx: 0.,
+  cy: 0.,
+  radio: 10.2,
+  color: 'r',
+};
+
+let square: Square, circle_area;
+
+square = {
+  side: 10.,
+  color: 'b'
+};
+
+let a = circle.radio;
+a = circle.radio;
+
+let a = circle["radio"];
+a = circle["radio"];
+
+circle.radio = 3;
+circle["radio"] = 3;
+circle.radio = {
+  side: 10.,
+  color: 'b'
+};
+
+
+type Circle = { cx: float, cy: float, radio: float, color: character };
+type Square = { side: float, color: character };
+
+let circle: Circle = {
+  cx: 0.,
+  cy: 0.,
+  radio: 10.2,
+  color: 'r',
+};
+
+let square: Square, circle_area;
+circle_area = 3.14 * circle.radio * circle["radio"];
+
+square.side = 10.;  // Error: 'square' no ha sido inicializado
+square = {
+  side: 10.,
+  color: 'b'
+};
+
+let square_area = square.side * square["side"];
+
+
+let my_house: House = {
+  location: {
+    city: 'M', country: 'E',
+  },
+  price: {
+    euro: 100, "dollar": 108, "yen": 16397
+  },
+};
+
+let with_tax = my_house["price"].euro * 1.1;
+let euro_to_yen = my_house.price["euro"] * 163.97;
+let with_tax = my_house["price"]["euro"].price * 1.1;

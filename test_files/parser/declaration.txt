@@ -1,0 +1,14 @@
+let a , b;
+a = 10;
+b = .1;
+a = 0xADDA;
+a = tr;
+let n = 'a';
+type object = { prop1: character, "prop2": int,};
+let var1: Vinicius, var2;
+var1 = {
+    a: 1,
+    a: 2, 
+    c: 2,
+};
+a = a;
