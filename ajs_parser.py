@@ -261,49 +261,51 @@ def p_comp_operator(p):
 
     """
     pass
+# Definición del analizador sintáctico
+def p_expression_plus(p):
+    """
+    expression_arith : expression_arith PLUS term
+    """
+    pass  # p[0] = p[1] + p[3]
 
-def p_expression_arith(p):
+def p_expression_minus(p):
     """
-    expression_arith : element operations
+    expression_arith : expression_arith MINUS term
     """
-    pass
+    pass  # p[0] = p[1] - p[3]
 
-def p_operations(p):
+def p_expression_term(p):
     """
-    operations : operation 
-               | operation operations
+    expression_arith : term
     """
-    pass
+    pass  # p[0] = p[1]
 
-def p_operation(p):
+def p_term_times(p):
     """
-    operation : arithmetic_operator element
+    term : term MULTIPLY factor
     """
-    pass
+    pass  # p[0] = p[1] * p[3]
 
-
-def p_arithmetic_operator(p):
+def p_term_divide(p):
     """
-    arithmetic_operator : PLUS
-                        | MINUS
-                        | MULTIPLY
-                        | DIVISION
+    term : term DIVISION factor
     """
-    pass
+    pass  # p[0] = p[1] / p[3]
 
-
-def p_element(p):
+def p_term_factor(p):
     """
-    element : INTEGER
-           | FLOAT
-           | HEX
-           | SCIENTIFIC
-           | OCTAL
-           | BINARY
-           | STRING
-           | OPEN_PAREN expression_arith CLOSE_PAREN
-           | STRING properties
-           | CHARACTER_VALUE
+    term : factor
+    """
+    pass  # p[0] = p[1]
+
+def p_factor_number(p):
+    """
+    factor : INTEGER"""
+    pass  # p[0] = int(p[1])
+
+def p_object_property(p):
+    """
+    object_property : STRING properties
     """
     pass
 
@@ -315,11 +317,10 @@ def p_comp_element(p):
            | SCIENTIFIC
            | OCTAL
            | BINARY
-           | STRING
            | expression_arith
            | OPEN_PAREN expression_arith CLOSE_PAREN
+           | STRING
            | STRING properties
-           | CHARACTER_VALUE
     """
     pass
 
