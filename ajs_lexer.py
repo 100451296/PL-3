@@ -17,7 +17,7 @@ tokens = [
 # Regla de expresiones regulares para manejar comentarios
 def t_COMMENT(t):
     r"(//.*\n)|(/\*([^*]|(\*+[^*/]))*\*+/)"
-    return t
+    pass
 
 # Strings
 def t_STRING(t):
@@ -225,6 +225,7 @@ def t_COMMA(t):
 
 # Ignorar espacios, tabulaciones y saltos de línea
 t_ignore = " \t\n"
+t_ignore_COMMENT = r'COMMENT'
 
 # Regla para manejar errores
 def t_error(t):
