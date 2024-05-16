@@ -326,8 +326,7 @@ def p_element(p):
 
 def p_comp_element(p):
     """
-    comp_element : element
-                 | expression_arith
+    comp_element : expression_arith
     """
     pass
 
