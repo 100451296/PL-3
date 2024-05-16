@@ -211,19 +211,21 @@ def p_expression(p):
 
 def p_expression_logic_and(p):
     """
-    expression_logic : logic_element AND expression_logic
+    expression_logic : logic_term AND logic_term
     """
     pass
 
 def p_expression_logic_or(p):
     """
-    expression_logic : logic_element OR expression_logic
+    expression_logic : logic_term OR logic_term
     """
     pass
 
-def p_expression_logic_term(p):
+def p_logic_term(p):
     """
-    expression_logic : logic_element 
+    logic_term : logic_element
+               | NOT logic_element
+               | OPEN_PAREN expression_logic CLOSE_PAREN
     """
     pass
 
@@ -233,12 +235,8 @@ def p_logic_element(p):
                   | FALSE
                   | expression_comp
                   | NOT OPEN_PAREN expression_comp CLOSE_PAREN
-                  | OPEN_PAREN expression_logic CLOSE_PAREN
-                  | STRING
-                  | NOT logic_element
     """
     pass
-
 
 def p_expression_comp(p):
     """
