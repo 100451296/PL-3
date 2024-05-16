@@ -190,23 +190,15 @@ def p_square_property(p):
 def p_value(p):
     """
     value : CHARACTER_VALUE
-            | INTEGER
-            | FLOAT
-            | HEX
-            | SCIENTIFIC
-            | OCTAL
-            | BINARY
-            | NULL
-            | TRUE
-            | FALSE
-            | expression_arith
-            | expression_comp
-            | NOT OPEN_PAREN expression_comp CLOSE_PAREN
-            | expression_logic
-            | NOT logic_element
-            | object
-            | STRING properties
-            | STRING
+          | NULL
+          | TRUE
+          | FALSE
+          | expression_arith
+          | expression_comp
+          | NOT OPEN_PAREN expression_comp CLOSE_PAREN
+          | expression_logic
+          | NOT logic_element
+          | object
     """
     pass
 
@@ -297,7 +289,7 @@ def p_term_factor(p):
     """
     term : factor
     """
-    pass  # p[0] = p[1]
+    pass  # p[0] = p[1]F
 
 def p_factor_number(p):
     """
@@ -313,14 +305,14 @@ def p_object_property(p):
 def p_element(p):
     """
     element : INTEGER
-           | FLOAT
-           | HEX
-           | SCIENTIFIC
-           | OCTAL
-           | BINARY
-           | STRING
-           | OPEN_PAREN expression_arith CLOSE_PAREN
-           | object_property
+            | FLOAT
+            | HEX
+            | SCIENTIFIC
+            | OCTAL
+            | BINARY
+            | STRING
+            | OPEN_PAREN expression_arith CLOSE_PAREN
+            | object_property
     """
     pass
 
