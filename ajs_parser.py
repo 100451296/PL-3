@@ -321,7 +321,6 @@ def p_element(p):
            | STRING
            | OPEN_PAREN expression_arith CLOSE_PAREN
            | object_property
-           | CHARACTER_VALUE
     """
     pass
 
