@@ -335,7 +335,7 @@ def p_comp_element(p):
            | expression_arith
            | OPEN_PAREN expression_arith CLOSE_PAREN
            | STRING
-           | STRING properties
+           | object_property
     """
     pass
 
