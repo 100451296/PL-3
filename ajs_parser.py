@@ -5,7 +5,7 @@ import ply.yacc as yacc
 
 precedence = (
     ('left', 'PLUS', 'MINUS'),   # Suma y resta tienen la misma precedencia y son de asociatividad izquierda
-    ('left', 'MULTIPLY', 'DIVISION'),  # Multiplicación y división también tienen la misma precedencia y son de asociatividad izquierda
+    ('left', 'MULTIPLY', 'DIVISION')  # Multiplicación y división también tienen la misma precedencia y son de asociatividad izquierda
 )
 
 
@@ -261,6 +261,7 @@ def p_comp_operator(p):
 
     """
     pass
+
 # Definición del analizador sintáctico
 def p_expression_plus(p):
     """
@@ -300,12 +301,27 @@ def p_term_factor(p):
 
 def p_factor_number(p):
     """
-    factor : INTEGER"""
+    factor : element"""
     pass  # p[0] = int(p[1])
 
 def p_object_property(p):
     """
     object_property : STRING properties
+    """
+    pass
+
+def p_element(p):
+    """
+    element : INTEGER
+           | FLOAT
+           | HEX
+           | SCIENTIFIC
+           | OCTAL
+           | BINARY
+           | STRING
+           | OPEN_PAREN expression_arith CLOSE_PAREN
+           | object_property
+           | CHARACTER_VALUE
     """
     pass
 
