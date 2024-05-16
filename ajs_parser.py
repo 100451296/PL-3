@@ -326,16 +326,8 @@ def p_element(p):
 
 def p_comp_element(p):
     """
-    comp_element : INTEGER
-           | FLOAT
-           | HEX
-           | SCIENTIFIC
-           | OCTAL
-           | BINARY
-           | expression_arith
-           | OPEN_PAREN expression_arith CLOSE_PAREN
-           | STRING
-           | object_property
+    comp_element : element
+                 | expression_arith
     """
     pass
 
