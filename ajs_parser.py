@@ -209,32 +209,35 @@ def p_expression(p):
     """
     pass
 
-def p_expression_logic(p):
+def p_expression_logic_and(p):
     """
-    expression_logic : logic_element logic_operator logic_element
-                     | logic_element logic_operator logic_element logic_operations
-    """
-    pass
-
-def p_logic_operator(p):
-    """
-    logic_operator : AND
-                    | OR
-    """
-
-def p_logic_operations(p):
-    """
-    logic_operations : logic_operation
-                    | logic_operation logic_operations
+    expression_logic : logic_element AND expression_logic
     """
     pass
 
-def p_logic_operation(p):
+def p_expression_logic_or(p):
     """
-    logic_operation : logic_operator logic_element
+    expression_logic : logic_element OR expression_logic
     """
     pass
 
+def p_expression_logic_term(p):
+    """
+    expression_logic : logic_element 
+    """
+    pass
+
+def p_logic_element(p):
+    """
+    logic_element : TRUE
+                  | FALSE
+                  | expression_comp
+                  | NOT OPEN_PAREN expression_comp CLOSE_PAREN
+                  | OPEN_PAREN expression_logic CLOSE_PAREN
+                  | STRING
+                  | NOT logic_element
+    """
+    pass
 
 
 def p_expression_comp(p):
@@ -257,13 +260,13 @@ def p_comp_operator(p):
 # Definición del analizador sintáctico
 def p_expression_plus(p):
     """
-    expression_arith : expression_arith PLUS term
+    expression_arith : term PLUS expression_arith
     """
     pass  # p[0] = p[1] + p[3]
 
 def p_expression_minus(p):
     """
-    expression_arith : expression_arith MINUS term
+    expression_arith : term MINUS expression_arith
     """
     pass  # p[0] = p[1] - p[3]
 
@@ -322,17 +325,6 @@ def p_comp_element(p):
     """
     pass
 
-def p_logic_element(p):
-    """
-    logic_element : TRUE
-            | FALSE
-            | expression_comp
-            | NOT OPEN_PAREN expression_comp CLOSE_PAREN
-            | OPEN_PAREN expression_logic CLOSE_PAREN
-            | STRING
-            | NOT logic_element
-    """
-    pass
 
 def p_error(p):
     print("Error de sintaxis en la entrada! ", p)
