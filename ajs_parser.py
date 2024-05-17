@@ -3,22 +3,23 @@ import sys
 from ajs_lexer import tokens
 import ply.yacc as yacc
 
+# Define the precedence to help resolve conflicts
 precedence = (
-    ('right', 'NOT'),  # Alta precedencia para el operador NOT
-    ('left', 'AND', 'OR'),  # Menos precedencia para AND y OR
-    ('left', 'PLUS', 'MINUS'),
-    ('left', 'MULTIPLY', 'DIVISION')
+    ('right', 'NOT'),  # High precedence for the NOT operator
+    ('left', 'OR'),    # Logical OR
+    ('left', 'AND'),   # Logical AND
+    ('nonassoc', 'EQUAL', 'GRATER', 'GRATER_EQUAL', 'LOWER', 'LOWER_EQUAL'),  # Comparison operators
+    ('left', 'PLUS', 'MINUS'),  # Arithmetic
+    ('left', 'MULTIPLY', 'DIVISION')  # Multiplication and division
 )
 
 def p_program(p):
-    """
-    program : statementList
-    """
+    "program : statementList"
     pass
 
 def p_statementList(p):
     """
-    statementList : statement 
+    statementList : statement
                   | statementList statement
     """
     pass
@@ -41,15 +42,14 @@ def p_conditional(p):
     pass
 
 def p_loop(p):
-    """
-    loop : WHILE OPEN_PAREN expression CLOSE_PAREN OPEN_BRACE statementList CLOSE_BRACE
-    """
+    "loop : WHILE OPEN_PAREN expression CLOSE_PAREN OPEN_BRACE statementList CLOSE_BRACE"
     pass
 
 def p_function_definition(p):
     """
     function_definition : FUNCTION STRING OPEN_PAREN args_list CLOSE_PAREN COLON type OPEN_BRACE statementList RETURN value SEMICOLON CLOSE_BRACE
     """
+    pass
 
 def p_args_list(p):
     """
@@ -66,11 +66,8 @@ def p_instruction(p):
     """
     pass
 
-
 def p_property_asignation(p):
-    """
-    property_asignation : STRING properties ASSIGN value
-    """
+    "property_asignation : STRING properties ASSIGN value"
     pass
 
 def p_declaration(p):
@@ -83,7 +80,7 @@ def p_declaration(p):
 
 def p_declaration_identifier(p):
     """
-    declaration_identifier : STRING 
+    declaration_identifier : STRING
                            | STRING COMMA declaration_identifier
                            | STRING COLON STRING
                            | STRING COLON STRING COMMA declaration_identifier
@@ -92,7 +89,7 @@ def p_declaration_identifier(p):
 
 def p_identifiers(p):
     """
-    identifiers : STRING 
+    identifiers : STRING
                 | STRING COMMA identifiers
     """
     pass
@@ -111,13 +108,13 @@ def p_object_identifiers(p):
     """
     pass
 
-# Gramatica del AJSON
 def p_object(p):
     """
     object : OPEN_BRACE pairs CLOSE_BRACE
            | OPEN_BRACE CLOSE_BRACE
     """
     pass
+
 def p_pairs(p):
     """
     pairs : pair COMMA pairs
@@ -125,30 +122,28 @@ def p_pairs(p):
           | pair COMMA
     """
     pass
+
 def p_pair(p):
-    """
-    pair : key COLON value
-    """
+    "pair : key COLON value"
     pass
 
-# Objeto de tipos
 def p_type_object(p):
     """
     type_object : OPEN_BRACE type_pairs CLOSE_BRACE
-           | OPEN_BRACE CLOSE_BRACE
+                | OPEN_BRACE CLOSE_BRACE
     """
     pass
+
 def p_type_pairs(p):
     """
     type_pairs : type_pair COMMA type_pairs
-                | type_pair
-                | type_pair COMMA
+               | type_pair
+               | type_pair COMMA
     """
     pass
+
 def p_type_pair(p):
-    """
-    type_pair : key COLON type
-    """
+    "type_pair : key COLON type"
     pass
 
 def p_key(p):
@@ -161,9 +156,9 @@ def p_key(p):
 def p_type(p):
     """
     type : CHARACTER
-        | INT_TYPE
-        | FLOAT_TYPE
-        | BOOLEAN
+          | INT_TYPE
+          | FLOAT_TYPE
+          | BOOLEAN
     """
     pass
 
@@ -177,73 +172,61 @@ def p_properties(p):
     pass
 
 def p_dot_property(p):
-    """
-    dot_property : DOT STRING
-    """
+    "dot_property : DOT STRING"
     pass
 
 def p_square_property(p):
-    """
-    square_property : OPEN_SQUARE QUOTED_STRING CLOSE_SQUARE
-    """
+    "square_property : OPEN_SQUARE QUOTED_STRING CLOSE_SQUARE"
     pass
 
 def p_value(p):
     """
     value : CHARACTER_VALUE
           | NULL
-          | TRUE
-          | FALSE
+          | boolean_value
           | expression_arith
           | comp_expression
           | expression_logic
-          | NOT logic_element
+          | NOT logic_expression
           | object
     """
     pass
 
+def p_boolean_value(p):
+    """
+    boolean_value : TRUE
+                  | FALSE
+    """
+    pass
+
 def p_expression(p):
-    """
-    expression : expression_logic
-    """
+    "expression : expression_logic"
     pass
 
 def p_expression_logic_and(p):
-    """
-    expression_logic : logic_element AND expression_logic
-    """
+    "expression_logic : logic_expression AND expression_logic"
     pass
 
 def p_expression_logic_or(p):
-    """
-    expression_logic : logic_element OR expression_logic
-    """
+    "expression_logic : logic_expression OR expression_logic"
     pass
 
 def p_expression_logic_term(p):
-    """
-    expression_logic : logic_element 
-    """
+    "expression_logic : logic_expression"
     pass
 
-def p_logic_element(p):
-    """ logic_element : TRUE
-                      | FALSE
-                      | not_expression
-                      | comp_expression
-                      | OPEN_PAREN expression_logic CLOSE_PAREN
-                      | STRING
+def p_logic_expression(p):
     """
-    pass
-
-def p_not_expression(p):
-    """ not_expression : NOT logic_element
+    logic_expression : boolean_value
+                     | comp_expression
+                     | OPEN_PAREN expression_logic CLOSE_PAREN
+                     | NOT logic_expression
+                     | STRING
     """
     pass
 
 def p_comp_expression(p):
-    """ comp_expression : comp_element comp_operator comp_element
-    """
+    "comp_expression : comp_element comp_operator comp_element"
     pass
 
 def p_comp_operator(p):
@@ -253,63 +236,43 @@ def p_comp_operator(p):
                   | GRATER_EQUAL
                   | LOWER
                   | LOWER_EQUAL
-
     """
     pass
 
 def p_comp_element(p):
-    """
-    comp_element : expression_arith
-    """
+    "comp_element : expression_arith"
     pass
 
-
-# Definición del analizador sintáctico
 def p_expression_plus(p):
-    """
-    expression_arith : term PLUS expression_arith
-    """
-    pass  # p[0] = p[1] + p[3]
+    "expression_arith : term PLUS expression_arith"
+    pass
 
 def p_expression_minus(p):
-    """
-    expression_arith : term MINUS expression_arith
-    """
-    pass  # p[0] = p[1] - p[3]
+    "expression_arith : term MINUS expression_arith"
+    pass
 
 def p_expression_term(p):
-    """
-    expression_arith : term
-    """
-    pass  # p[0] = p[1]
+    "expression_arith : term"
+    pass
 
 def p_term_times(p):
-    """
-    term : term MULTIPLY factor
-    """
-    pass  # p[0] = p[1] * p[3]
+    "term : term MULTIPLY factor"
+    pass
 
 def p_term_divide(p):
-    """
-    term : term DIVISION factor
-    """
-    pass  # p[0] = p[1] / p[3]
+    "term : term DIVISION factor"
+    pass
 
 def p_term_factor(p):
-    """
-    term : factor
-    """
-    pass  # p[0] = p[1]F
+    "term : factor"
+    pass
 
 def p_factor_number(p):
-    """
-    factor : element"""
-    pass  # p[0] = int(p[1])
+    "factor : element"
+    pass
 
 def p_object_property(p):
-    """
-    object_property : STRING properties
-    """
+    "object_property : STRING properties"
     pass
 
 def p_element(p):
@@ -326,20 +289,16 @@ def p_element(p):
     """
     pass
 
-
-
 def p_error(p):
-    print("Error de sintaxis en la entrada! ", p)
+    print("Error de sintaxis en la entrada!", p)
 
-# Construcción del analizador sintáctico
-#parser = yacc.yacc(debug=True, debuglog=yacc.PlyLogger(sys.stderr))
-yacc.errorlog = yacc.NullLogger()
+# Building the parser
+yacc.errorlog = yacc.NullLogger()  # Disable YACC error messages to standard output
 parser = yacc.yacc()
 
-# pruebas
+# Test cases
 if __name__ == "__main__":
     try:
-        # coge el archivo pasado por linea de comando o el string si no se le pasa nada
         data = read_file(sys.argv[1]) if len(sys.argv) > 1 else "//Comentario\n"
         parsed_data = parser.parse(data)
         print(parsed_data)
