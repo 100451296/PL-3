@@ -205,7 +205,6 @@ def p_value(p):
 def p_expression(p):
     """
     expression : expression_logic
-               | logic_element
     """
     pass
 
