@@ -228,20 +228,22 @@ def p_expression_logic_term(p):
     pass
 
 def p_logic_element(p):
+    """ logic_element : TRUE
+                      | FALSE
+                      | not_expression
+                      | comp_expression
+                      | OPEN_PAREN expression_logic CLOSE_PAREN
+                      | STRING
     """
-    logic_element : TRUE
-                  | FALSE
-                  | comp_expression
-                  | NOT OPEN_PAREN comp_expression CLOSE_PAREN
-                  | OPEN_PAREN expression_logic CLOSE_PAREN
-                  | STRING
-                  | NOT logic_element
+    pass
+
+def p_not_expression(p):
+    """ not_expression : NOT logic_element
     """
     pass
 
 def p_comp_expression(p):
-    """
-    comp_expression : comp_element comp_operator comp_element
+    """ comp_expression : comp_element comp_operator comp_element
     """
     pass
 
@@ -255,6 +257,14 @@ def p_comp_operator(p):
 
     """
     pass
+
+def p_comp_element(p):
+    """
+    comp_element : expression_arith
+                 | OPEN_PAREN comp_expression CLOSE_PAREN
+    """
+    pass
+
 
 # Definición del analizador sintáctico
 def p_expression_plus(p):
