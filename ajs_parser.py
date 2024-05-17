@@ -4,10 +4,11 @@ from ajs_lexer import tokens
 import ply.yacc as yacc
 
 precedence = (
-    ('left', 'PLUS', 'MINUS'),   # Suma y resta tienen la misma precedencia y son de asociatividad izquierda
-    ('left', 'MULTIPLY', 'DIVISION')  # Multiplicación y división también tienen la misma precedencia y son de asociatividad izquierda
+    ('right', 'NOT'),  # Alta precedencia para el operador NOT
+    ('left', 'AND', 'OR'),  # Menos precedencia para AND y OR
+    ('left', 'PLUS', 'MINUS'),
+    ('left', 'MULTIPLY', 'DIVISION')
 )
-
 
 def p_program(p):
     """
@@ -194,8 +195,8 @@ def p_value(p):
           | TRUE
           | FALSE
           | expression_arith
-          | expression_comp
-          | NOT OPEN_PAREN expression_comp CLOSE_PAREN
+          | comp_element comp_operator comp_element
+          | NOT OPEN_PAREN comp_element comp_operator comp_element CLOSE_PAREN
           | expression_logic
           | NOT logic_element
           | object
@@ -230,17 +231,17 @@ def p_logic_element(p):
     """
     logic_element : TRUE
                   | FALSE
-                  | expression_comp
-                  | NOT OPEN_PAREN expression_comp CLOSE_PAREN
+                  | comp_expression
+                  | NOT OPEN_PAREN comp_expression CLOSE_PAREN
                   | OPEN_PAREN expression_logic CLOSE_PAREN
                   | STRING
                   | NOT logic_element
     """
     pass
 
-def p_expression_comp(p):
+def p_comp_expression(p):
     """
-    expression_comp : comp_element comp_operator comp_element
+    comp_expression : comp_element comp_operator comp_element
     """
     pass
 
