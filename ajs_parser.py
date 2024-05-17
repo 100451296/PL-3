@@ -221,7 +221,6 @@ def p_logic_expression(p):
                      | comp_expression
                      | OPEN_PAREN expression_logic CLOSE_PAREN
                      | NOT logic_expression
-                     | STRING
     """
     pass
 
