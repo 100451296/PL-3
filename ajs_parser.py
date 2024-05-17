@@ -195,8 +195,7 @@ def p_value(p):
           | TRUE
           | FALSE
           | expression_arith
-          | comp_element comp_operator comp_element
-          | NOT OPEN_PAREN comp_element comp_operator comp_element CLOSE_PAREN
+          | comp_expression
           | expression_logic
           | NOT logic_element
           | object
@@ -261,7 +260,6 @@ def p_comp_operator(p):
 def p_comp_element(p):
     """
     comp_element : expression_arith
-                 | OPEN_PAREN comp_expression CLOSE_PAREN
     """
     pass
 
@@ -328,11 +326,6 @@ def p_element(p):
     """
     pass
 
-def p_comp_element(p):
-    """
-    comp_element : expression_arith
-    """
-    pass
 
 
 def p_error(p):
