@@ -3,7 +3,7 @@ import sys
 import argparse
 import os
 from ajs_lexer import scanner
-from ajs_parser import parser
+from ajs_parser import parse_data
 from progargs import read_file
 
 LEXER_OUTPUT_DIR = "output/lexer/"
@@ -35,7 +35,7 @@ def main():
     if args.par:
         try:
             # coge el archivo pasado por linea de comando o el string si no se le pasa nada
-            parsed_data = parser.parse(data)
+            parsed_data = parse_data(data)
         except Exception as e:
             print("Error al analizar:", str(e))
 
