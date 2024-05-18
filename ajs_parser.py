@@ -162,6 +162,86 @@ def p_type(p):
     """
     pass
 
+
+def p_value(p):
+    """
+    value : CHARACTER_VALUE
+          | NULL
+          | expression
+          | object
+    """
+    pass
+
+def p_expression_binop(p):
+    """expression : expression PLUS expression
+    | expression MINUS expression
+    | expression MULTIPLY expression
+    | expression DIVISION expression
+    | expression GRATER expression
+    | expression LOWER expression
+    | expression GRATER_EQUAL expression
+    | expression LOWER_EQUAL expression
+    | expression EQUAL expression
+    | expression AND expression
+    | expression OR expression"""
+
+    if p[2] == "+":
+        p[0] = ("suma", p[1], p[2], p[3])
+    elif p[2] == "-":
+        p[0] = ("resta", p[1], p[2], p[3])
+    elif p[2] == "*":
+        p[0] = ("mul", p[1], p[2], p[3])
+    elif p[2] == "/":
+        p[0] = ("div", p[1], p[2], p[3])
+    else:
+        p[0] = ("binop", p[1], p[2], p[3])
+
+
+def p_expression_not(p):
+    "expression : NOT expression"
+    p[0] = ("not", p[2])
+
+
+def p_expression_group(p):
+    "expression : OPEN_PAREN expression CLOSE_PAREN"
+    p[0] = p[2]
+
+
+def p_expression_number(p):
+    """
+    expression : INTEGER
+                  | FLOAT
+                  | HEX
+                  | SCIENTIFIC
+                  | OCTAL
+                  | BINARY
+    """
+    p[0] = ("number", p[1])
+
+
+def p_expression_boolean(p):
+    """expression : TRUE
+    | FALSE"""
+    p[0] = ("boolean", p[1])
+
+
+def p_expression_id(p):
+    """
+    expression : STRING
+    """
+    p[0] = ("id", p[1])
+
+def p_expression_object(p):
+    """
+    expression : object_property
+    """
+    p[0] = ("object", p[1])
+
+def p_object_property(p):
+    "object_property : STRING properties"
+    p[0] = ("object_property", p[1], p[2])
+
+
 def p_properties(p):
     """
     properties : dot_property
@@ -169,126 +249,18 @@ def p_properties(p):
                | dot_property properties
                | square_property properties
     """
-    pass
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = [p[1]] + p[2]
 
 def p_dot_property(p):
     "dot_property : DOT STRING"
-    pass
+    p[0] = ("dot", p[2])
 
 def p_square_property(p):
     "square_property : OPEN_SQUARE QUOTED_STRING CLOSE_SQUARE"
-    pass
-
-def p_value(p):
-    """
-    value : CHARACTER_VALUE
-          | NULL
-          | expression_logic
-          | object
-    """
-    pass
-
-def p_boolean_value(p):
-    """
-    boolean_value : TRUE
-                  | FALSE
-    """
-    pass
-
-def p_expression(p):
-    "expression : expression_logic"
-    pass
-
-def p_expression_logic_and(p):
-    "expression_logic : logic_expression AND expression_logic"
-    pass
-
-def p_expression_logic_or(p):
-    "expression_logic : logic_expression OR expression_logic"
-    pass
-
-def p_expression_logic_term(p):
-    "expression_logic : logic_expression"
-    pass
-
-
-def p_logic_expression(p):
-    """
-    logic_expression : boolean_value
-                     | comp_expression
-                     | OPEN_PAREN expression_logic CLOSE_PAREN
-                     | NOT logic_expression
-    """
-    pass
-
-def p_comp_expression(p):
-    "comp_expression : comp_element comp_operator comp_element"
-    pass
-
-def p_comp_expression_str(p):
-    "comp_expression : comp_element"
-    pass
-
-def p_comp_element(p):
-    "comp_element : expression_arith"
-    pass
-
-def p_comp_operator(p):
-    """
-    comp_operator : EQUAL
-                  | GRATER
-                  | GRATER_EQUAL
-                  | LOWER
-                  | LOWER_EQUAL
-    """
-    pass
-
-
-def p_expression_plus(p):
-    "expression_arith : term PLUS expression_arith"
-    pass
-
-def p_expression_minus(p):
-    "expression_arith : term MINUS expression_arith"
-    pass
-
-def p_expression_term(p):
-    "expression_arith : term"
-    pass
-
-def p_term_times(p):
-    "term : term MULTIPLY factor"
-    pass
-
-def p_term_divide(p):
-    "term : term DIVISION factor"
-    pass
-
-def p_term_factor(p):
-    "term : factor"
-    pass
-
-def p_factor_number(p):
-    "factor : element"
-    pass
-
-def p_object_property(p):
-    "object_property : STRING properties"
-    pass
-
-def p_element(p):
-    """
-    element : INTEGER
-            | FLOAT
-            | HEX
-            | SCIENTIFIC
-            | OCTAL
-            | BINARY
-            | STRING
-            | OPEN_PAREN expression_arith CLOSE_PAREN
-            | object_property
-    """
-    pass
+    p[0] = ("square_property", p[2])
 
 def p_error(p):
     print("Error de sintaxis en la entrada!", p)
