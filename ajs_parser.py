@@ -183,11 +183,7 @@ def p_value(p):
     """
     value : CHARACTER_VALUE
           | NULL
-          | boolean_value
-          | expression_arith
-          | comp_expression
           | expression_logic
-          | NOT logic_expression
           | object
     """
     pass
@@ -215,6 +211,7 @@ def p_expression_logic_term(p):
     "expression_logic : logic_expression"
     pass
 
+
 def p_logic_expression(p):
     """
     logic_expression : boolean_value
@@ -228,6 +225,14 @@ def p_comp_expression(p):
     "comp_expression : comp_element comp_operator comp_element"
     pass
 
+def p_comp_expression_str(p):
+    "comp_expression : comp_element"
+    pass
+
+def p_comp_element(p):
+    "comp_element : expression_arith"
+    pass
+
 def p_comp_operator(p):
     """
     comp_operator : EQUAL
@@ -238,9 +243,6 @@ def p_comp_operator(p):
     """
     pass
 
-def p_comp_element(p):
-    "comp_element : expression_arith"
-    pass
 
 def p_expression_plus(p):
     "expression_arith : term PLUS expression_arith"
