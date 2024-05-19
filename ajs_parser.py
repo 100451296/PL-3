@@ -157,9 +157,9 @@ def p_object_identifiers(p):
                        | STRING COLON STRING COMMA object_identifiers
     """
     if len(p) == 4:
-        p[0] = [(p[1], p[3])]
+        p[0] = [p[1]]
     else:
-        p[0] = [(p[1], p[3])] + p[5]
+        p[0] = [p[1]] + p[5]
 
 def p_object(p):
     """
@@ -173,11 +173,11 @@ def p_object(p):
 
 def p_pairs(p):
     """
-    pairs : pair COMMA pairs
-          | pair
+    pairs : pair
           | pair COMMA
+          | pair COMMA pairs  
     """
-    if len(p) == 2:
+    if len(p) == 2 or len(p) == 3:
         p[0] = [p[1]]
     else:
         p[0] = [p[1]] + p[3]
@@ -202,7 +202,7 @@ def p_type_pairs(p):
                | type_pair
                | type_pair COMMA
     """
-    if len(p) == 2:
+    if len(p) == 2 or len(p) == 3:
         p[0] = [p[1]]
     else:
         p[0] = [p[1]] + p[3]
@@ -217,6 +217,8 @@ def p_type_pair(p):
         p[0] = (p[1], "")
     elif p[3] == "boolean":
         p[0] = (p[1], True)
+    else:
+        p[0] = (p[1], p[3])
 
 def p_key(p):
     """
@@ -231,6 +233,7 @@ def p_type(p):
           | INT_TYPE
           | FLOAT_TYPE
           | BOOLEAN
+          | type_object
     """
     p[0] = p[1]
 
@@ -342,7 +345,7 @@ def p_dot_property(p):
 
 def p_square_property(p):
     "square_property : OPEN_SQUARE QUOTED_STRING CLOSE_SQUARE"
-    p[0] = ("square_property", p[2])
+    p[0] = p[2]
 
 def p_error(p):
     print("Error de sintaxis en la entrada!", p)
