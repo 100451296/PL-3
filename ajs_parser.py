@@ -328,7 +328,7 @@ def p_expression_id(p):
     expression : STRING
     """
     p[0] = variable_table[p[1]] if p[1] in variable_table.keys() else 0
-    if p[0] is None:
+    if not p[1] in variable_table.keys():
         print("Key error") 
 
 def p_expression_object(p):

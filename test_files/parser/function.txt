@@ -1,6 +1,6 @@
 function mod(a: int, b: int): int {
     while (a >= b) {
-        a = a - b;
+        a = a-  b;
     }
     return a;
 }
@@ -14,3 +14,4 @@ function greatest_common_divisor(a: int, b: int): int {
     }
     return a;
 }
+

@@ -1,4 +1,4 @@
-let b = 2;
+let b,a  = 2;
 a = tr && fl;
 a = tr || b * b <= (0b101 * (0702 - 1e-10));
 a = tr && tr || fl;
