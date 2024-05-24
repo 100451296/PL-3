@@ -78,6 +78,18 @@ def p_instruction(p):
                 | asignation SEMICOLON
                 | property_asignation SEMICOLON
     """
+    if isinstance(p[2], tuple):
+         if p[2][0] == "asignation":
+        # TRATAMIENTO DE ERROR PENDIENTE    
+            if isinstance(p[2][1], list):
+                for identifier in p[2][1]:
+                    if identifier in variable_table.keys():
+                        variable_table[identifier] = p[2][2]
+                        continue
+                    print("error")
+            else:
+                if p[2][1] in variable_table.keys():
+                    variable_table[p[2][1]] = p[2][2]
     p[0] = p[1]
 
 def p_property_asignation(p):
@@ -96,7 +108,15 @@ def p_declaration(p):
                 | LET asignation
                 | TYPE STRING ASSIGN type_object
     """
-    if len(p) == 3:
+    if isinstance(p[2], tuple):
+        if p[2][0] == "asignation":
+            if isinstance(p[2][1], list):
+                for identifier in p[2][1]:
+                    variable_table[identifier] = p[2][2]
+            else:
+                variable_table[p[2][1]] = p[2][2]
+        p[0] = ("asignation_declaration", p[2])
+    elif len(p) == 3:
         p[0] = ("simple_declaration", p[2])
     else:
         object_table[p[2]] = p[4]
@@ -144,11 +164,6 @@ def p_asignation(p):
     asignation : identifiers ASSIGN value
                | object_identifiers ASSIGN object
     """
-    if isinstance(p[1], list):
-        for identifier in p[1]:
-            variable_table[identifier] = p[3]
-    else:
-        variable_table[p[1]] = p[3]
     p[0] = ("asignation", p[1], p[3])
 
 def p_object_identifiers(p):
@@ -277,9 +292,9 @@ def p_expression_binop(p):
         p[0] = p[1] <= p[3]
     elif p[2] == '==':
         p[0] = p[1] == p[3]
-    elif p[2] == 'and':
+    elif p[2] == '&&':
         p[0] = p[1] and p[3]
-    elif p[2] == 'or':
+    elif p[2] == '||':
         p[0] = p[1] or p[3]
 
 def p_expression_not(p):
@@ -302,8 +317,10 @@ def p_expression_number(p):
     p[0] = p[1]
 
 def p_expression_boolean(p):
-    """expression : TRUE
-    | FALSE"""
+    """
+    expression : TRUE
+               | FALSE
+    """
     p[0] = p[1]
 
 def p_expression_id(p):
