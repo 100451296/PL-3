@@ -90,6 +90,8 @@ def p_instruction(p):
             else:
                 if p[2][1] in variable_table.keys():
                     variable_table[p[2][1]] = p[2][2]
+                else:
+                    print("error")
     p[0] = p[1]
 
 def p_property_asignation(p):
@@ -130,15 +132,25 @@ def p_declaration_identifier(p):
                            | STRING COLON STRING COMMA declaration_identifier
     """
 
+    # TRATAMIENTO ERRORES PENDIENTE
     if len(p) == 2:
-        variable_table[p[1]] = None
+        if not p[1] in variable_table.keys():
+            variable_table[p[1]] = None
+        else:
+            print("error segundo", p[1])
         p[0] = p[1]
     elif len(p) == 4 and p[2] == ":":
-        variable_table[p[1]] = object_table[p[3]]
-        p[0] = (p[1], p[3])
+        if not p[1] in variable_table.keys():
+            variable_table[p[1]] = object_table[p[3]]
+            p[0] = (p[1], p[3])
+        else:
+            print("error")
     elif len(p) == 4:
         if isinstance(p[3], list):
-            variable_table[p[1]] = None
+            if not p[1] in variable_table.keys():
+                variable_table[p[1]] = None
+            else:
+                print("error primero")
             p[0] = [p[1]] + p[3]
         else:
             variable_table[p[1]] = None
@@ -261,6 +273,33 @@ def p_value(p):
     """
     p[0] = p[1]
 
+def infer_type(value):
+    if isinstance(value, int):
+        return 'int'
+    elif isinstance(value, float):
+        return 'float'
+    elif isinstance(value, str) and len(value) == 1:  # Assuming a single character is a 'character'
+        return 'character'
+    elif isinstance(value, bool):
+        return 'boolean'
+    # Expand this function as needed
+
+def convert_if_possible(left, right):
+    left_type = infer_type(left)
+    right_type = infer_type(right)
+    if left_type == right_type:
+        return left, right
+    elif left_type == 'character' and right_type == 'int':
+        return ord(left), right
+    elif left_type == 'int' and right_type == 'float':
+        return float(left), right
+    elif right_type == 'character' and left_type == 'int':
+        return left, ord(right)
+    elif right_type == 'int' and left_type == 'float':
+        return left, float(right)
+    else:
+        raise TypeError(f"Cannot operate between types {left_type} and {right_type}")
+
 def p_expression_binop(p):
     """expression : expression PLUS expression
     | expression MINUS expression
@@ -274,28 +313,31 @@ def p_expression_binop(p):
     | expression AND expression
     | expression OR expression"""
 
-    if p[2] == '+':
-        p[0] = p[1] + p[3]
-    elif p[2] == '-':
-        p[0] = p[1] - p[3]
-    elif p[2] == '*':
-        p[0] = p[1] * p[3]
-    elif p[2] == '/':
-        p[0] = p[1] / p[3]
-    elif p[2] == '>':
-        p[0] = p[1] > p[3]
-    elif p[2] == '<':
-        p[0] = p[1] < p[3]
-    elif p[2] == '>=':
-        p[0] = p[1] >= p[3]
-    elif p[2] == '<=':
-        p[0] = p[1] <= p[3]
-    elif p[2] == '==':
-        p[0] = p[1] == p[3]
-    elif p[2] == '&&':
-        p[0] = p[1] and p[3]
-    elif p[2] == '||':
-        p[0] = p[1] or p[3]
+    left, operator, right = p[1], p[2], p[3]
+
+    try:
+        # Convert types if necessary
+        converted_left, converted_right = convert_if_possible(left, right)
+        
+        if operator == '+':
+            p[0] = converted_left + converted_right
+        elif operator == '-':
+            p[0] = converted_left - converted_right
+        elif operator == '*':
+            p[0] = converted_left * converted_right
+        elif operator == '/':
+            p[0] = converted_left / converted_right
+        elif operator in ['>', '<', '>=', '<=']:
+            p[0] = eval(f"{converted_left} {operator} {converted_right}")
+        elif operator == '==':
+            p[0] = converted_left == converted_right
+        elif operator == '&&':
+            p[0] = converted_left and converted_right
+        elif operator == '||':
+            p[0] = converted_left or converted_right
+    except TypeError as e:
+        print(f"Type error: {e}")
+        p[0] = None
 
 def p_expression_not(p):
     "expression : NOT expression"

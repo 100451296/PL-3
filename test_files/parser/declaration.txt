@@ -11,3 +11,6 @@ object = {
     prop2 : 2
 };
 a = a;
+
+let c, d, f;
+let c, d, f;

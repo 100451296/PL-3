@@ -1,2 +1,6 @@
-let a , b;
-a = a;
+type object = { prop1: character, "prop2": int,};
+let obj : object;
+object = {
+    prop1 : 'asdasd', 
+    prop2 : 2
+};
