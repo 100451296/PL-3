@@ -1,14 +1,1 @@
-let a, a1, v = 2;
-
-while (a == 2) {
-    a = 2;
-}
-while (a == 2) {
-    a = 2;
-    if (tr && !fl){
-        a1 = 2;
-    }
-    else {
-        v = 9;
-    }
-}
+let n = 1 && 5;

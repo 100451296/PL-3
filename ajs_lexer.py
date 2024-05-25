@@ -178,7 +178,7 @@ def t_CLOSE_SQUARE(t):
 
 # Caracter entrecomillado
 def t_CHARACTER_VALUE(t):
-    r"'([^\\']|\\.)*'"
+    r"''|'([\x00-\x7F\x80-\xFF])'"
     t.value = t.value[1:-1]  # Remover las comillas simples
     return t
 
