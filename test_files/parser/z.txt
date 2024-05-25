@@ -1,1 +1,2 @@
-let n = 1 && 5;
+let a, b, c = 1;
+let a, b, c = 10;

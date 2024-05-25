@@ -83,7 +83,6 @@ def p_instruction(p):
         # TRATAMIENTO DE ERROR PENDIENTE    
             if isinstance(p[1][1], list):
                 for identifier in p[1][1]:
-                    print(variable_table)
                     if identifier in variable_table.keys():
                         variable_table[identifier] = p[1][2]
                     else:
@@ -111,18 +110,25 @@ def p_declaration(p):
                 | LET asignation
                 | TYPE STRING ASSIGN type_object
     """
-    if isinstance(p[2], tuple) and p[2][0] == "asignation":
-        if isinstance(p[2][1], list):
-            for identifier in p[2][1]:
-                variable_table[identifier] = p[2][2]
+    try:
+        if isinstance(p[2], tuple) and p[2][0] == "asignation":
+            if isinstance(p[2][1], list):
+                for identifier in p[2][1]:
+                    if identifier in variable_table.keys():
+                        raise Exception("Redefinition", identifier)
+                    variable_table[identifier] = p[2][2]
+            else:
+                if p[2][1] in variable_table.keys():
+                    raise Exception("Redefinition", p[2][1])
+                variable_table[p[2][1]] = p[2][2]
+            p[0] = ("asignation_declaration", p[2])
+        elif len(p) == 3:
+            p[0] = ("simple_declaration", p[2])
         else:
-            variable_table[p[2][1]] = p[2][2]
-        p[0] = ("asignation_declaration", p[2])
-    elif len(p) == 3:
-        p[0] = ("simple_declaration", p[2])
-    else:
-        object_table[p[2]] = p[4]
-        p[0] = ("type_declaration", p[2], p[4])
+            object_table[p[2]] = p[4]
+            p[0] = ("type_declaration", p[2], p[4])
+    except Exception as e:
+        print(e)
 
 def p_declaration_identifier(p):
     """
@@ -137,20 +143,20 @@ def p_declaration_identifier(p):
         if not p[1] in variable_table.keys():
             variable_table[p[1]] = None
         else:
-            print("error segundo", p[1])
+            print("error redefinition", p[1])
         p[0] = p[1]
     elif len(p) == 4 and p[2] == ":":
         if not p[1] in variable_table.keys():
             variable_table[p[1]] = object_table[p[3]]
             p[0] = (p[1], p[3])
         else:
-            print("error")
+            print("error redefinition", p[1])
     elif len(p) == 4:
         if isinstance(p[3], list):
             if not p[1] in variable_table.keys():
                 variable_table[p[1]] = None
             else:
-                print("error primero")
+                print("error redefinition", p[1])
             p[0] = [p[1]] + p[3]
         else:
             variable_table[p[1]] = None
@@ -274,14 +280,15 @@ def p_value(p):
     p[0] = p[1]
 
 def infer_type(value):
-    if isinstance(value, int):
+    if isinstance(value, bool):
+        return 'boolean'
+    elif isinstance(value, int):
         return 'int'
     elif isinstance(value, float):
         return 'float'
     elif isinstance(value, str) and len(value) == 1:  # Assuming a single character is a 'character'
         return 'character'
-    elif isinstance(value, bool):
-        return 'boolean'
+   
     # Expand this function as needed
 
 def convert_if_possible(left, right):
@@ -332,9 +339,15 @@ def p_expression_binop(p):
         elif operator == '==':
             p[0] = converted_left == converted_right
         elif operator == '&&':
-            p[0] = converted_left and converted_right
+                if infer_type(converted_left) == 'boolean' and infer_type(converted_right) == 'boolean':
+                    p[0] = converted_left and converted_right
+                else:
+                    raise TypeError(f"AND operation requires boolean operands, got {infer_type(converted_left)} and {infer_type(converted_right)}")
         elif operator == '||':
-            p[0] = converted_left or converted_right
+            if infer_type(converted_left) == 'boolean' and infer_type(converted_right) == 'boolean':
+                p[0] = converted_left or converted_right
+            else:
+                raise TypeError(f"OR operation requires boolean operands, got {infer_type(converted_left)} and {infer_type(converted_right)}")
     except TypeError as e:
         print(f"Type error: {e}")
         p[0] = None
