@@ -1,4 +1,4 @@
-let a, a1, v;
+let a, a1, v = 2;
 
 while (a == 2) {
     a = 2;
@@ -6,12 +6,13 @@ while (a == 2) {
 while (a == 2) {
     a = 2;
     if (tr && !fl){
-        al = 2;
+        a1 = 2;
     }
     else {
         v = 9;
     }
 }
+
 
 let v1 = 0;
 let v2 = 0;

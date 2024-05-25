@@ -78,20 +78,21 @@ def p_instruction(p):
                 | asignation SEMICOLON
                 | property_asignation SEMICOLON
     """
-    if isinstance(p[2], tuple):
-         if p[2][0] == "asignation":
+    if isinstance(p[1], tuple):
+         if p[1][0] == "asignation":
         # TRATAMIENTO DE ERROR PENDIENTE    
-            if isinstance(p[2][1], list):
-                for identifier in p[2][1]:
+            if isinstance(p[1][1], list):
+                for identifier in p[1][1]:
+                    print(variable_table)
                     if identifier in variable_table.keys():
-                        variable_table[identifier] = p[2][2]
-                        continue
-                    print("error")
+                        variable_table[identifier] = p[1][2]
+                    else:
+                        print("error: varibale no declarada", p[1][1])
             else:
-                if p[2][1] in variable_table.keys():
-                    variable_table[p[2][1]] = p[2][2]
+                if p[1][1] in variable_table.keys():
+                    variable_table[p[1][1]] = p[1][2]
                 else:
-                    print("error")
+                    print("error: varibale no declarada", p[1])
     p[0] = p[1]
 
 def p_property_asignation(p):
@@ -110,13 +111,12 @@ def p_declaration(p):
                 | LET asignation
                 | TYPE STRING ASSIGN type_object
     """
-    if isinstance(p[2], tuple):
-        if p[2][0] == "asignation":
-            if isinstance(p[2][1], list):
-                for identifier in p[2][1]:
-                    variable_table[identifier] = p[2][2]
-            else:
-                variable_table[p[2][1]] = p[2][2]
+    if isinstance(p[2], tuple) and p[2][0] == "asignation":
+        if isinstance(p[2][1], list):
+            for identifier in p[2][1]:
+                variable_table[identifier] = p[2][2]
+        else:
+            variable_table[p[2][1]] = p[2][2]
         p[0] = ("asignation_declaration", p[2])
     elif len(p) == 3:
         p[0] = ("simple_declaration", p[2])
