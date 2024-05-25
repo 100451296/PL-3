@@ -6,11 +6,10 @@ a = tr;
 let n = 'a';
 type object = { prop1: character, "prop2": int,};
 let obj : object;
-object = {
-    prop1 : 'asdasd', 
+obj = {
+    prop1 : 'a', 
     prop2 : 2
 };
 a = a;
 
-let c, d, f;
 let c, d, f;

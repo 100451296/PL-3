@@ -1,2 +1,1 @@
 let a, b, c = 1;
-let a, b, c = 10;

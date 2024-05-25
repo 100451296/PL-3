@@ -1,6 +1,6 @@
-type Circle = { cx: float, cy: float, radio: float, color: character };
-type Square = { side: float, color: character };
-type House = { 
+type CircleType = { cx: float, cy: float, radio: float, color: character };
+type SquareType = { side: float, color: character };
+type HouseType = { 
   location: { city: character, country: character }, 
   price: { 
     euro: {
@@ -11,69 +11,64 @@ type House = {
   }
 };
 
-let circle: Circle ;
+let myCircle: CircleType;
 
-circle = {
+myCircle = {
   cx: 0.,
   cy: 0.,
   radio: 10.2,
   color: 'r',
 };
 
-
-let circle: Circle, circle2 : Circle = {
+let anotherCircle: CircleType, thirdCircle: CircleType = {
   cx: 0.,
   cy: 0.,
   radio: 10.2,
   color: 'r',
 };
 
-let square: Square, circle_area;
+let mySquare: SquareType, myCircleArea;
 
-square = {
+mySquare = {
   side: 10.,
   color: 'b'
 };
 
-let a = circle.radio;
-a = circle.radio;
+let radioValue = myCircle.radio;
+radioValue = myCircle.radio;
 
-let a = circle["radio"];
-a = circle["radio"];
+let radioValueBracket = myCircle["radio"];
+radioValueBracket = myCircle["radio"];
 
-circle.radio = 3;
-circle["radio"] = 3;
-circle.radio = {
+myCircle.radio = 3;
+myCircle["radio"] = 3;
+myCircle.radio = {
   side: 10.,
   color: 'b'
 };
 
+type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
+type AnotherSquareType = { side: float, color: character };
 
-type Circle = { cx: float, cy: float, radio: float, color: character };
-type Square = { side: float, color: character };
-
-let circle: Circle = {
+let newCircle: AnotherCircleType = {
   cx: 0.,
   cy: 0.,
   radio: 10.2,
   color: 'r',
 };
 
-let square: Square, circle_area;
-circle_area = 3.14 * circle.radio * circle["radio"];
+let newSquare: AnotherSquareType, newCircleArea;
+newCircleArea = 3.14 * newCircle.radio * newCircle["radio"];
 
-
-square.side = 10.;  // Error: 'square' no ha sido inicializado
-square = {
+newSquare.side = 10.;  // Error: 'newSquare' no ha sido inicializado
+newSquare = {
   side: 10.,
   color: 'b'
 };
 
-let square_area = square.side * square["side"];
+let newSquareArea = newSquare.side * newSquare["side"];
 
-
-
-let my_house: House = {
+let myHouse: HouseType = {
   location: {
     city: 'M', country: 'E',
   },
@@ -82,4 +77,4 @@ let my_house: House = {
   },
 };
 
-let with_tax = my_house["price"]["euro"].price * 1.1;
+let withTax = myHouse["price"]["euro"].price * 1.1;
