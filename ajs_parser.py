@@ -35,25 +35,16 @@ def p_statementList(p):
 def p_statement(p):
     """
     statement : instruction
-              | COMMENT
               | conditional
               | loop
               | function_definition
     """
-    if isinstance(p[1], tuple):
-        if p[1][0] == "asignation":
-        # TRATAMIENTO DE ERROR PENDIENTE    
-            if isinstance(p[1][1], list):
-                for identifier in p[1][1]:
-                    if identifier in variable_table.keys():
-                        variable_table[identifier] = p[1][2]
-                    else:
-                        print("error: varibale no declarada", p[1][1])
-            else:
-                if p[1][1] in variable_table.keys():
-                    variable_table[p[1][1]] = p[1][2]
-                else:
-                    print("error: varibale no declarada", p[1])
+    if p[1][0] == "function":
+        function_name = p[1][1]
+        args = p[1][2]
+        type_return = p[1][3]
+        statements = p[1][4]
+        object_table[function_name] = [args, type_return, statements]
     p[0] = p[1]
 
 def p_conditional(p):
@@ -74,7 +65,7 @@ def p_function_definition(p):
     """
     function_definition : FUNCTION STRING OPEN_PAREN args_list CLOSE_PAREN COLON type OPEN_BRACE statementList RETURN value SEMICOLON CLOSE_BRACE
     """
-    p[0] = ("function", p[2], p[4], p[7], p[9], p[11])
+    p[0] = ("function", p[2], p[4], p[7], p[9])
 
 def p_args_list(p):
     """
@@ -92,7 +83,20 @@ def p_instruction(p):
                 | asignation SEMICOLON
                 | property_asignation SEMICOLON
     """
-   
+    if isinstance(p[1], tuple):
+         if p[1][0] == "asignation":
+        # TRATAMIENTO DE ERROR PENDIENTE    
+            if isinstance(p[1][1], list):
+                for identifier in p[1][1]:
+                    if identifier in variable_table.keys():
+                        variable_table[identifier] = p[1][2]
+                    else:
+                        print("error: varibale no declarada", p[1][1])
+            else:
+                if p[1][1] in variable_table.keys():
+                    variable_table[p[1][1]] = p[1][2]
+                else:
+                    print("error: varibale no declarada", p[1])
     p[0] = p[1]
 
 def p_property_asignation(p):
