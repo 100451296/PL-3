@@ -16,7 +16,7 @@ precedence = (
 # Variable table
 variable_table = {}
 # Object table
-object_table = {}
+object_table = {"int" : None, "float" : None, "character" : None, "boolean" : None}
 
 def p_program(p):
     "program : statementList"
@@ -67,6 +67,22 @@ def p_function_definition(p):
     """
     p[0] = ("function", p[2], p[4], p[7], p[9])
 
+def p_function_call(p):
+    """
+    function_call : STRING OPEN_PAREN args_call CLOSE_PAREN
+    """
+    p[0] = ("call", p[3])
+
+def p_args_call(p):
+    """
+    args_call : expression
+              | expression COMMA args_call
+    """
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = [p[1]] + p[3]
+
 def p_args_list(p):
     """
     args_list : STRING COLON type
@@ -82,6 +98,7 @@ def p_instruction(p):
     instruction : declaration SEMICOLON
                 | asignation SEMICOLON
                 | property_asignation SEMICOLON
+                | function_call SEMICOLON
     """
     if isinstance(p[1], tuple):
          if p[1][0] == "asignation":
@@ -272,7 +289,10 @@ def p_type(p):
           | FLOAT_TYPE
           | BOOLEAN
           | type_object
+          | STRING
     """
+    if not p[1] in object_table.keys():
+        print("type error")
     p[0] = p[1]
 
 def p_value(p):
@@ -281,6 +301,7 @@ def p_value(p):
           | NULL
           | expression
           | object
+          | function_call
     """
     p[0] = p[1]
 
@@ -396,6 +417,12 @@ def p_expression_object(p):
     expression : object_property
     """
     p[0] = p[1]
+
+def p_expression_call(p):
+    """
+    expression : function_call
+    """
+    p[0] = 0
 
 def p_object_property(p):
     "object_property : STRING properties"
