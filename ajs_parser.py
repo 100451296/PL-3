@@ -291,8 +291,9 @@ def p_type(p):
           | type_object
           | STRING
     """
-    if not p[1] in object_table.keys():
-        print("type error")
+    if not isinstance(p[1], dict):
+        if not p[1] in object_table.keys():
+            print("type error")
     p[0] = p[1]
 
 def p_value(p):
@@ -301,7 +302,6 @@ def p_value(p):
           | NULL
           | expression
           | object
-          | function_call
     """
     p[0] = p[1]
 

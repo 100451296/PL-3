@@ -1,14 +1,8 @@
-type NestedObject = { "this is": character, prop2: int, "prop3": boolean };
-type Object = { prop1: float, "nested": NestedObject };
-
-let var1: Object, var2, var3;
-var1 = {
-    prop1: 10e-1,
-    nested: { "this is": 'A', prop2: 10, prop3: true }
+type CircleType = { cx: float, cy: float, radio: float, color: character };
+type SquareType = { side: float, color: character };
+type HouseType = { 
+  location: { city: character, country: character }, 
+  number: int
 };
 
-if (gte(var1.nested["prop2"], var2)) {
-    var3 = 'Y';
-} else {
-    var3 = 'N';
-}
+
