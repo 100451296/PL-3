@@ -40,6 +40,20 @@ def p_statement(p):
               | loop
               | function_definition
     """
+    if isinstance(p[1], tuple):
+        if p[1][0] == "asignation":
+        # TRATAMIENTO DE ERROR PENDIENTE    
+            if isinstance(p[1][1], list):
+                for identifier in p[1][1]:
+                    if identifier in variable_table.keys():
+                        variable_table[identifier] = p[1][2]
+                    else:
+                        print("error: varibale no declarada", p[1][1])
+            else:
+                if p[1][1] in variable_table.keys():
+                    variable_table[p[1][1]] = p[1][2]
+                else:
+                    print("error: varibale no declarada", p[1])
     p[0] = p[1]
 
 def p_conditional(p):
@@ -78,20 +92,7 @@ def p_instruction(p):
                 | asignation SEMICOLON
                 | property_asignation SEMICOLON
     """
-    if isinstance(p[1], tuple):
-         if p[1][0] == "asignation":
-        # TRATAMIENTO DE ERROR PENDIENTE    
-            if isinstance(p[1][1], list):
-                for identifier in p[1][1]:
-                    if identifier in variable_table.keys():
-                        variable_table[identifier] = p[1][2]
-                    else:
-                        print("error: varibale no declarada", p[1][1])
-            else:
-                if p[1][1] in variable_table.keys():
-                    variable_table[p[1][1]] = p[1][2]
-                else:
-                    print("error: varibale no declarada", p[1])
+   
     p[0] = p[1]
 
 def p_property_asignation(p):
