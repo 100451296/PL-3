@@ -1,8 +1,5 @@
-type CircleType = { cx: float, cy: float, radio: float, color: character };
-type SquareType = { side: float, color: character };
-type HouseType = { 
-  location: { city: character, country: character }, 
-  number: int
-};
+function gte(a: int, b: int): int {
+    return a + b;
+}
 
-
+gte(1, 2);

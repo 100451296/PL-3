@@ -26,9 +26,12 @@ def p_statementList(p):
     """
     statementList : statement
                   | statementList statement
+                  |
     """
     if len(p) == 2:
         p[0] = [p[1]]
+    elif len(p) == 1:
+        p[0] = []
     else:
         p[0] = p[1] + [p[2]]
 
@@ -65,21 +68,24 @@ def p_function_definition(p):
     """
     function_definition : FUNCTION STRING OPEN_PAREN args_list CLOSE_PAREN COLON type OPEN_BRACE statementList RETURN value SEMICOLON CLOSE_BRACE
     """
-    p[0] = ("function", p[2], p[4], p[7], p[9])
+    p[0] = ("function", p[2], p[4], p[7], p[9], p[11])
 
 def p_function_call(p):
     """
     function_call : STRING OPEN_PAREN args_call CLOSE_PAREN
     """
-    p[0] = ("call", p[3])
+    p[0] = ("call", p[1], p[3])
 
 def p_args_call(p):
     """
     args_call : expression
               | expression COMMA args_call
+              |
     """
     if len(p) == 2:
         p[0] = [p[1]]
+    elif len(p) == 1:
+        p[0] = []
     else:
         p[0] = [p[1]] + p[3]
 
@@ -87,9 +93,12 @@ def p_args_list(p):
     """
     args_list : STRING COLON type
               | STRING COLON type COMMA args_list
+              |
     """
     if len(p) == 4:
         p[0] = [(p[1], p[3])]
+    elif len(p) == 1:
+        p[0] = []
     else:
         p[0] = [(p[1], p[3])] + p[5]
 
@@ -422,6 +431,7 @@ def p_expression_call(p):
     """
     expression : function_call
     """
+    print(object_table[p[1][1]])
     p[0] = 0
 
 def p_object_property(p):
