@@ -187,13 +187,11 @@ def procesar_type_declaration(p1, p2):
 
 def procesar_asignation(p):
     for id in p[1]:
-        if isinstance(id, tuple): # Caso de objeto
-            object_id, type, value = id[0], id[1], p[2]
-            if not type in object_table.keys():
-                raise TypeError(f"type {object_id} not defined")
+        if isinstance(p[2], dict): # Caso de objeto
+            object_id, value = id[0], p[2]
             variable_table[object_id] = value
             continue
-        variable_table[id] = p[2][1] 
+        variable_table[id] = resolve_value(p[2])
         # PENDIENTE: Hacer tratamiento de valor para propiedades de objetos
 
 def procesar_property_asignation(p1, p2, p3):
