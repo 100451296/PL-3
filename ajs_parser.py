@@ -58,7 +58,7 @@ def p_statement(p):
     elif p[1][0] == "asignation":
         procesar_asignation(p[1])
     elif p[1][0] == "property_asignation":
-        procesar_property_asignation(p[1][1], p[1][2], p[1][3])
+        procesar_property_asignation(p[1])
     elif p[1][0] == "call":
         procesar_function_call(p[1][1], p[1][2])
     p[0] = p[1]
@@ -211,8 +211,15 @@ def procesar_asignation(p):
         variable_table[id] = resolve_value(p[2])
         # PENDIENTE: Hacer tratamiento de valor para propiedades de objetos
 
-def procesar_property_asignation(p1, p2, p3):
-    pass
+def procesar_property_asignation(p):
+    id, keys, value = p[1], p[2], p[3]
+    if not id in variable_table.keys():
+        raise Exception(f"variable not declared {id}")
+    current = variable_table[id]
+    for key in keys:
+        previous = current
+        current = current[key]
+    previous[key] = resolve_value(value)
 
 def procesar_function_call(p1, p2):
     pass

@@ -77,15 +77,12 @@ let newCircle: AnotherCircleType = {
 let newSquare: AnotherSquareType, newCircleArea;
 newCircleArea = 3.14 * newCircle.radio * newCircle["radio"];
 
-
-
-
-
-
-
-
-
-
+myCircle.radio = 3;
+myCircle["radio"] = 3;
+myCircle.radio = {
+  side: 10.,
+  color: 'b'
+};
 
 
 
