@@ -32,20 +32,9 @@ let b =  1;
 
 
 
-let a , b;
-
-let n = 'a';
-type object = { prop1: character, "prop2": int,};
-let obj : object;
-obj = {
-    prop1 : 'a', 
-    prop2 : 2
-};
-a = a;
-
-let c, d, f;
-
-
+let b,a  = 2;
+a = tr && fl;
+a = tr || b * b <= (0b101 * (0702 - 1e-10));
 
 
 
