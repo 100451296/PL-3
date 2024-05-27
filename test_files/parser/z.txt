@@ -1,5 +1,81 @@
-function gte(a: int, b: int): int {
-    return a + b;
-}
 
-gte(1, 2);
+/*
+type SquareType = { side: float, color: character };
+
+
+let mySquare: SquareType = {
+  side: 10.,
+  color: 'b'
+};
+
+
+
+let mySquare: SquareType, a;
+
+a = 1;
+mySquare: SquareType = {
+  side: 10.,
+  color: 'b'
+};
+
+
+
+
+
+
+let b =  1;
+*/
+
+
+
+
+
+
+
+let a , b;
+
+let n = 'a';
+type object = { prop1: character, "prop2": int,};
+let obj : object;
+obj = {
+    prop1 : 'a', 
+    prop2 : 2
+};
+a = a;
+
+let c, d, f;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

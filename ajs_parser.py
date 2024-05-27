@@ -26,7 +26,6 @@ def p_statementList(p):
     """
     statementList : statement
                   | statementList statement
-                  |
     """
     if len(p) == 2:
         p[0] = [p[1]]
@@ -43,12 +42,168 @@ def p_statement(p):
               | function_definition
     """
     if p[1][0] == "function":
-        function_name = p[1][1]
-        args = p[1][2]
-        type_return = p[1][3]
-        statements = p[1][4]
-        object_table[function_name] = [args, type_return, statements]
+        procesar_function_definition(p[1])
+    elif p[1][0] == "if":
+        procesar_conditional(p[1])
+    elif p[1][0] == "if-else":
+        procesar_conditional_else(p[1])
+    elif p[1][0] == "while":
+        procesar_loop(p[1])
+    elif p[1][0] == "asignation_declaration":
+        procesar_asignation_declaration(p[1][1])
+    elif p[1][0] == "simple_declaration":
+        procesar_simple_declaration(p[1][1])
+    elif p[1][0] == "type_declaration":
+        procesar_type_declaration(p[1][1], p[1][2])
+    elif p[1][0] == "asignation":
+        procesar_asignation(p[1])
+    elif p[1][0] == "property_asignation":
+        procesar_property_asignation(p[1][1], p[1][2], p[1][3])
+    elif p[1][0] == "call":
+        procesar_function_call(p[1][1], p[1][2])
     p[0] = p[1]
+
+def procesar_statement(statement: tuple, local):
+    pass
+
+def procesar_function_definition(p):
+    pass
+
+def procesar_conditional(p):
+    pass
+
+def procesar_conditional_else(p):
+    pass
+
+def procesar_loop(p):
+    pass
+
+def procesar_asignation_declaration(p):    
+    for id in p[1]:
+        if isinstance(id, tuple): # Caso de objeto
+            object_id, type, value = id[0], id[1], p[2]
+            if object_id in variable_table.keys():
+                raise Exception(f"Redefinition {object_id}")   
+            if not type in object_table.keys():
+                raise TypeError(f"type {object_id} not defined")
+            # PENDIENTE: comprobar que el valor concuerde con el tipo
+            variable_table[object_id] = value
+            continue
+        if id in variable_table.keys():
+            raise Exception(f"Redefinition {id}")  
+        variable_table[id] = resolve_value(p[2])
+        # PENDIENTE: Hacer tratamiento de valor para propiedades de objetos
+
+def compare_dictionaries(dict1, dict2):
+    # Verificar si tienen las mismas claves
+    if set(dict1.keys()) != set(dict2.keys()):
+        return False
+
+    # Verificar los tipos de los valores asociados a las claves
+    for key in dict1.keys():
+        if key in dict2:
+            value1 = dict1[key]
+            value2 = dict2[key]
+            if type(value1) != type(value2):
+                return False
+
+    return True
+
+def resolve_value(p):
+    if p[0] == "binop":
+        left, operator, right = p[1], p[2], p[3]
+        
+        if left[0] == "binop" and right[0] == "binop":
+            left = ("num", resolve_value(left))
+            right = resolve_value(right)
+            return resolve_binop((None, left, operator, right))
+        
+        elif left[0] == "binop" and right[0] != "binop":
+            left = ("num", resolve_value(left))
+            print("paso", (None, left, operator, right))
+            return resolve_binop((None, left, operator, right))
+        
+        elif left[0] != "binop" and right[0] == "binop":
+            right = ("num", resolve_value(right))
+            return resolve_binop((None, left, operator, right))
+        
+        elif left[0] != "binop" and right[0] != "binop":
+            return resolve_binop(p)
+
+        return resolve_binop(p)
+    else:
+        return p[1]
+
+
+def resolve_binop(p):
+    left, operator, right = p[1][1], p[2], p[3][1]
+
+    try:
+        # Convert types if necessary
+        converted_left, converted_right = convert_if_possible(left, right)
+        result = None
+
+        if operator == '+':
+            result = converted_left + converted_right
+        elif operator == '-':
+            result = converted_left - converted_right
+        elif operator == '*':
+            result = converted_left * converted_right
+        elif operator == '/':
+            result = converted_left / converted_right
+        elif operator in ['>', '<', '>=', '<=']:
+            result = eval(f"{converted_left} {operator} {converted_right}")
+        elif operator == '==':
+            result = converted_left == converted_right
+        elif operator == '&&':
+                if infer_type(converted_left) == 'boolean' and infer_type(converted_right) == 'boolean':
+                    result = converted_left and converted_right
+                else:
+                    raise TypeError(f"AND operation requires boolean operands, got {infer_type(converted_left)} and {infer_type(converted_right)}")
+        elif operator == '||':
+            if infer_type(converted_left) == 'boolean' and infer_type(converted_right) == 'boolean':
+                result = converted_left or converted_right
+            else:
+                raise TypeError(f"OR operation requires boolean operands, got {infer_type(converted_left)} and {infer_type(converted_right)}")
+    except TypeError as e:
+        print(f"Type error: {e}")
+        result = None
+    finally:
+        return result
+    
+def procesar_simple_declaration(p):    
+    for id in p:
+        if isinstance(id, tuple):
+            if not id[1] in object_table.keys():
+                raise TypeError(f"type {id[1]} not defined")
+            variable_table[id[0]] = object_table[id[1]]
+            continue
+        if id in variable_table.keys():
+            raise Exception(f"Redefinition {id}")    
+        variable_table[id] = None
+
+def procesar_type_declaration(p1, p2):
+    object_table[p1] = p2
+
+def procesar_asignation(p):
+    for id in p[1]:
+        if isinstance(id, tuple): # Caso de objeto
+            object_id, type, value = id[0], id[1], p[2]
+            if not type in object_table.keys():
+                raise TypeError(f"type {object_id} not defined")
+            variable_table[object_id] = value
+            continue
+        variable_table[id] = p[2][1] 
+        # PENDIENTE: Hacer tratamiento de valor para propiedades de objetos
+
+def procesar_property_asignation(p1, p2, p3):
+    pass
+
+def procesar_function_call(p1, p2):
+    pass
+
+def procesar_expresion(expresion, tabla_simbolos):
+    pass
 
 def p_conditional(p):
     """
@@ -109,29 +264,10 @@ def p_instruction(p):
                 | property_asignation SEMICOLON
                 | function_call SEMICOLON
     """
-    if isinstance(p[1], tuple):
-         if p[1][0] == "asignation":
-        # TRATAMIENTO DE ERROR PENDIENTE    
-            if isinstance(p[1][1], list):
-                for identifier in p[1][1]:
-                    if identifier in variable_table.keys():
-                        variable_table[identifier] = p[1][2]
-                    else:
-                        print("error: varibale no declarada", p[1][1])
-            else:
-                if p[1][1] in variable_table.keys():
-                    variable_table[p[1][1]] = p[1][2]
-                else:
-                    print("error: varibale no declarada", p[1])
     p[0] = p[1]
 
 def p_property_asignation(p):
     "property_asignation : STRING properties ASSIGN value"
-    current = variable_table[p[1]]
-    for key in p[2]:
-        previous = current
-        current = current[key]
-    previous[key] = p[4]
     p[0] = ("property_asignation", p[1], p[2], p[4])
 
 
@@ -143,20 +279,10 @@ def p_declaration(p):
     """
     try:
         if isinstance(p[2], tuple) and p[2][0] == "asignation":
-            if isinstance(p[2][1], list):
-                for identifier in p[2][1]:
-                    if identifier in variable_table.keys():
-                        raise Exception("Redefinition", identifier)
-                    variable_table[identifier] = p[2][2]
-            else:
-                if p[2][1] in variable_table.keys():
-                    raise Exception("Redefinition", p[2][1])
-                variable_table[p[2][1]] = p[2][2]
             p[0] = ("asignation_declaration", p[2])
         elif len(p) == 3:
             p[0] = ("simple_declaration", p[2])
         else:
-            object_table[p[2]] = p[4]
             p[0] = ("type_declaration", p[2], p[4])
     except Exception as e:
         print(e)
@@ -171,31 +297,16 @@ def p_declaration_identifier(p):
 
     # TRATAMIENTO ERRORES PENDIENTE
     if len(p) == 2:
-        if not p[1] in variable_table.keys():
-            variable_table[p[1]] = None
-        else:
-            print("error redefinition", p[1])
-        p[0] = p[1]
+        p[0] = [p[1]]
     elif len(p) == 4 and p[2] == ":":
-        if not p[1] in variable_table.keys():
-            variable_table[p[1]] = object_table[p[3]]
-            p[0] = (p[1], p[3])
-        else:
-            print("error redefinition", p[1])
+        p[0] = [(p[1], p[3])]
     elif len(p) == 4:
         if isinstance(p[3], list):
-            if not p[1] in variable_table.keys():
-                variable_table[p[1]] = None
-            else:
-                print("error redefinition", p[1])
             p[0] = [p[1]] + p[3]
         else:
-            variable_table[p[1]] = None
-            variable_table[p[3]] = None
             p[0] = [p[1], p[3]]
     else:
-        variable_table[p[1]] = object_table[p[3]]
-        p[0] = (p[1], p[5])
+        p[0] = [(p[1], p[3])] + p[5]
         
 
 def p_identifiers(p):
@@ -221,9 +332,9 @@ def p_object_identifiers(p):
                        | STRING COLON STRING COMMA object_identifiers
     """
     if len(p) == 4:
-        p[0] = [p[1]]
+        p[0] = [(p[1], p[3])]
     else:
-        p[0] = [p[1]] + p[5]
+        p[0] = [(p[1], p[3])] + p[5]
 
 def p_object(p):
     """
@@ -307,8 +418,7 @@ def p_type(p):
 
 def p_value(p):
     """
-    value : CHARACTER_VALUE
-          | NULL
+    value : NULL
           | expression
           | object
     """
@@ -354,42 +464,11 @@ def p_expression_binop(p):
     | expression EQUAL expression
     | expression AND expression
     | expression OR expression"""
-
-    left, operator, right = p[1], p[2], p[3]
-
-    try:
-        # Convert types if necessary
-        converted_left, converted_right = convert_if_possible(left, right)
-        
-        if operator == '+':
-            p[0] = converted_left + converted_right
-        elif operator == '-':
-            p[0] = converted_left - converted_right
-        elif operator == '*':
-            p[0] = converted_left * converted_right
-        elif operator == '/':
-            p[0] = converted_left / converted_right
-        elif operator in ['>', '<', '>=', '<=']:
-            p[0] = eval(f"{converted_left} {operator} {converted_right}")
-        elif operator == '==':
-            p[0] = converted_left == converted_right
-        elif operator == '&&':
-                if infer_type(converted_left) == 'boolean' and infer_type(converted_right) == 'boolean':
-                    p[0] = converted_left and converted_right
-                else:
-                    raise TypeError(f"AND operation requires boolean operands, got {infer_type(converted_left)} and {infer_type(converted_right)}")
-        elif operator == '||':
-            if infer_type(converted_left) == 'boolean' and infer_type(converted_right) == 'boolean':
-                p[0] = converted_left or converted_right
-            else:
-                raise TypeError(f"OR operation requires boolean operands, got {infer_type(converted_left)} and {infer_type(converted_right)}")
-    except TypeError as e:
-        print(f"Type error: {e}")
-        p[0] = None
+    p[0] = ("binop", p[1], p[2], p[3])
 
 def p_expression_not(p):
     "expression : NOT expression"
-    p[0] = not p[2]
+    p[0] = ("not", p[2])
 
 def p_expression_group(p):
     "expression : OPEN_PAREN expression CLOSE_PAREN"
@@ -404,42 +483,42 @@ def p_expression_number(p):
                 | OCTAL
                 | BINARY
     """
-    p[0] = p[1]
+    p[0] = ('int', p[1])
+
+def p_expression_character(p):
+    """
+    expression : CHARACTER_VALUE
+    """
+    p[0] = ('character', p[1])
 
 def p_expression_boolean(p):
     """
     expression : TRUE
                | FALSE
     """
-    p[0] = p[1]
+    p[0] = ('boolean', p[1])
 
 def p_expression_id(p):
     """
     expression : STRING
     """
-    p[0] = variable_table[p[1]] if p[1] in variable_table.keys() else 0
-    if not p[1] in variable_table.keys():
-        print("Key error") 
+    p[0] = ('id', p[1])
 
 def p_expression_object(p):
     """
     expression : object_property
     """
-    p[0] = p[1]
+    p[0] = ('object_property', p[1])
 
 def p_expression_call(p):
     """
     expression : function_call
     """
-    print(object_table[p[1][1]])
-    p[0] = 0
+    p[0] = ('function_call', p[1])
 
 def p_object_property(p):
     "object_property : STRING properties"
-    current = variable_table[p[1]]
-    for key in p[2]:
-        current = current[key]
-    p[0] = current
+    p[0] = ("object_property", p[1], p[2])
 
 def p_properties(p):
     """
