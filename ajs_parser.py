@@ -143,7 +143,6 @@ def resolve_value(p):
     elif p[0] == "not":
         return not resolve_value(p[1])
     elif p[0] == "object_property":
-        print(p, variable_table)
         id, keys = p[1][0], p[1][1]
         current = variable_table[id]
         for key in keys:
