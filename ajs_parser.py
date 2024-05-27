@@ -144,8 +144,12 @@ def resolve_value(p):
         return not resolve_value(p[1])
     elif p[0] == "object_property":
         id, keys = p[1][0], p[1][1]
+        if not id in variable_table.keys():
+            raise Exception(f"Variable not declared {id}")
         current = variable_table[id]
         for key in keys:
+            if not key in current.keys():
+                raise Exception(f"Property error {current}.{id}")
             current = current[key]
         return current
     else:
