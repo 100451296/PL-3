@@ -87,7 +87,7 @@ def procesar_asignation_declaration(p):
             if not type in object_table.keys():
                 raise TypeError(f"type {object_id} not defined")
             # PENDIENTE: comprobar que el valor concuerde con el tipo
-            variable_table[object_id] = value
+            variable_table[object_id] = resolve_value(value)
             continue
         if id in variable_table.keys():
             raise Exception(f"Redefinition {id}")  
@@ -110,7 +110,12 @@ def compare_dictionaries(dict1, dict2):
     return True
 
 def resolve_value(p):
-    if p[0] == "binop":
+    if isinstance(p, dict):
+        aux = dict()
+        for key in p.keys():
+            aux[key] = resolve_value(p[key])
+        return aux
+    elif p[0] == "binop":
         left, operator, right = p[1], p[2], p[3]
         
         if left[0] == "binop" and right[0] == "binop":
@@ -137,6 +142,13 @@ def resolve_value(p):
         return variable_table[id]
     elif p[0] == "not":
         return not resolve_value(p[1])
+    elif p[0] == "object_property":
+        print(p, variable_table)
+        id, keys = p[1][0], p[1][1]
+        current = variable_table[id]
+        for key in keys:
+            current = current[key]
+        return current
     else:
         return p[1]
 
@@ -194,8 +206,8 @@ def procesar_type_declaration(p1, p2):
 def procesar_asignation(p):
     for id in p[1]:
         if isinstance(p[2], dict): # Caso de objeto
-            object_id, value = id[0], p[2]
-            variable_table[object_id] = value
+            object_id, value = id, p[2]
+            variable_table[object_id] = resolve_value(p[2])
             continue
         variable_table[id] = resolve_value(p[2])
         # PENDIENTE: Hacer tratamiento de valor para propiedades de objetos
@@ -522,7 +534,7 @@ def p_expression_call(p):
 
 def p_object_property(p):
     "object_property : STRING properties"
-    p[0] = ("object_property", p[1], p[2])
+    p[0] = (p[1], p[2])
 
 def p_properties(p):
     """
