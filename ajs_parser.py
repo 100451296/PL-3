@@ -120,7 +120,6 @@ def resolve_value(p):
         
         elif left[0] == "binop" and right[0] != "binop":
             left = ("num", resolve_value(left))
-            print("paso", (None, left, operator, right))
             return resolve_binop((None, left, operator, right))
         
         elif left[0] != "binop" and right[0] == "binop":
@@ -136,6 +135,8 @@ def resolve_value(p):
         if not id in variable_table.keys():
             raise Exception(f"Variable not declared {id}")
         return variable_table[id]
+    elif p[0] == "not":
+        return not resolve_value(p[1])
     else:
         return p[1]
 
@@ -196,7 +197,6 @@ def procesar_asignation(p):
             object_id, value = id[0], p[2]
             variable_table[object_id] = value
             continue
-        print(p)
         variable_table[id] = resolve_value(p[2])
         # PENDIENTE: Hacer tratamiento de valor para propiedades de objetos
 
