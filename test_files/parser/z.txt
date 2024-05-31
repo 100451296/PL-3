@@ -26,14 +26,11 @@ mySquare: SquareType = {
 let b =  1;
 */
 
-let b,a  = 2;
-if (a == 2){
-    a = 10;
-}
-if (b == 2){
-  b = fl;
-}
+let b,a  = 0;
 
+while (a <= 10){
+  a = a + 1;
+}
 
 
 

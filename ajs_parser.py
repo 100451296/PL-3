@@ -28,21 +28,21 @@ def procesar_stamentList(list):
         if statement[0] == "function":
             procesar_function_definition(statement)
         elif statement[0] == "if":
-            procesar_conditional(statement)
+            procesar_conditional(statement) #
         elif statement[0] == "if-else":
-            procesar_conditional_else(statement)
+            procesar_conditional_else(statement) #
         elif statement[0] == "while":
             procesar_loop(statement)
         elif statement[0] == "asignation_declaration":
-            procesar_asignation_declaration(statement[1])
+            procesar_asignation_declaration(statement[1]) #
         elif statement[0] == "simple_declaration":
-            procesar_simple_declaration(statement[1])
+            procesar_simple_declaration(statement[1]) #
         elif statement[0] == "type_declaration":
-            procesar_type_declaration(statement[1], statement[2])
+            procesar_type_declaration(statement[1], statement[2]) #
         elif statement[0] == "asignation":
-            procesar_asignation(statement)
-        elif statement[0] == "property_asignation":
-            procesar_property_asignation(statement)
+            procesar_asignation(statement) #
+        elif statement[0] == "property_asignation": 
+            procesar_property_asignation(statement) #
         elif statement[0] == "call":
             procesar_function_call(statement[1], statement[2])
 
@@ -83,10 +83,31 @@ def procesar_conditional(p):
         procesar_stamentList(statementList)
 
 def procesar_conditional_else(p):
-    pass
-
+    condition, statementListTrue, statementListFalse = p[1], p[2], p[3]
+    resolve = resolve_value(condition)
+    condition = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
+    if condition is None:
+        raise TypeError("Condition must be bool or [0, 1]", p)
+    if condition:
+        procesar_stamentList(statementListTrue)
+    else:
+        procesar_stamentList(statementListFalse)
+        
 def procesar_loop(p):
-    pass
+    condition, statementList = p[1], p[2]
+    resolve = resolve_value(condition)
+    
+    # Tratamiento de error
+    resolve = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
+    if resolve is None:
+        raise TypeError("Condition must be bool or [0, 1]", p)
+    
+    while resolve:
+        procesar_stamentList(statementList)
+        resolve = resolve_value(condition)
+        resolve = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
+        if resolve is None:
+            raise TypeError("Condition must be bool or [0, 1]", p)
 
 def procesar_asignation_declaration(p):    
     for id in p[1]:
