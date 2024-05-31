@@ -20,7 +20,31 @@ object_table = {"int" : None, "float" : None, "character" : None, "boolean" : No
 
 def p_program(p):
     "program : statementList"
+    procesar_stamentList(p[1])
     p[0] = p[1]
+
+def procesar_stamentList(list):
+    for statement in list:
+        if statement[0] == "function":
+            procesar_function_definition(statement)
+        elif statement[0] == "if":
+            procesar_conditional(statement)
+        elif statement[0] == "if-else":
+            procesar_conditional_else(statement)
+        elif statement[0] == "while":
+            procesar_loop(statement)
+        elif statement[0] == "asignation_declaration":
+            procesar_asignation_declaration(statement[1])
+        elif statement[0] == "simple_declaration":
+            procesar_simple_declaration(statement[1])
+        elif statement[0] == "type_declaration":
+            procesar_type_declaration(statement[1], statement[2])
+        elif statement[0] == "asignation":
+            procesar_asignation(statement)
+        elif statement[0] == "property_asignation":
+            procesar_property_asignation(statement)
+        elif statement[0] == "call":
+            procesar_function_call(statement[1], statement[2])
 
 def p_statementList(p):
     """
@@ -41,26 +65,6 @@ def p_statement(p):
               | loop
               | function_definition
     """
-    if p[1][0] == "function":
-        procesar_function_definition(p[1])
-    elif p[1][0] == "if":
-        procesar_conditional(p[1])
-    elif p[1][0] == "if-else":
-        procesar_conditional_else(p[1])
-    elif p[1][0] == "while":
-        procesar_loop(p[1])
-    elif p[1][0] == "asignation_declaration":
-        procesar_asignation_declaration(p[1][1])
-    elif p[1][0] == "simple_declaration":
-        procesar_simple_declaration(p[1][1])
-    elif p[1][0] == "type_declaration":
-        procesar_type_declaration(p[1][1], p[1][2])
-    elif p[1][0] == "asignation":
-        procesar_asignation(p[1])
-    elif p[1][0] == "property_asignation":
-        procesar_property_asignation(p[1])
-    elif p[1][0] == "call":
-        procesar_function_call(p[1][1], p[1][2])
     p[0] = p[1]
 
 def procesar_statement(statement: tuple, local):
@@ -70,7 +74,13 @@ def procesar_function_definition(p):
     pass
 
 def procesar_conditional(p):
-    pass
+    condition, statementList = p[1], p[2]
+    resolve = resolve_value(condition)
+    condition = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
+    if condition is None:
+        raise TypeError("Condition must be bool or [0, 1]", p)
+    if condition:
+        procesar_stamentList(statementList)
 
 def procesar_conditional_else(p):
     pass
@@ -110,6 +120,9 @@ def compare_dictionaries(dict1, dict2):
     return True
 
 def resolve_value(p):
+    """
+    Esta función resuelve recursivamente cualquier expresión
+    """
     if isinstance(p, dict):
         aux = dict()
         for key in p.keys():
@@ -157,6 +170,9 @@ def resolve_value(p):
 
 
 def resolve_binop(p):
+    """
+    Esta función resuelve una expresión de tipo binop (value1 op value2)
+    """
     left, operator, right = resolve_value(p[1]), p[2], resolve_value(p[3])
 
     try:
@@ -437,9 +453,6 @@ def p_type(p):
           | type_object
           | STRING
     """
-    if not isinstance(p[1], dict):
-        if not p[1] in object_table.keys():
-            print("type error")
     p[0] = p[1]
 
 def p_value(p):

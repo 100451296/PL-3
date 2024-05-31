@@ -26,66 +26,13 @@ mySquare: SquareType = {
 let b =  1;
 */
 
-
-type CircleType = { cx: float, cy: float, radio: float, color: character };
-type SquareType = { side: float, color: character };
-type HouseType = { 
-  location: { city: character, country: character }, 
-  price: { 
-    euro: {
-      price: int
-    }, 
-    dollar: int, 
-    yen: int
-  }
-};
-
-let myCircle: CircleType;
-
-myCircle = {
-  cx: 0.,
-  cy: 0.,
-  radio: 10.2,
-  color: 'r',
-};
-
-
-
-let radioValue = myCircle.radio;
-radioValue = myCircle.radio;
-
-let radioValueBracket = myCircle["radio"];
-radioValueBracket = myCircle["radio"];
-
-myCircle.radio = 3;
-myCircle["radio"] = 3;
-myCircle.radio = {
-  side: 10.,
-  color: 'b'
-};
-
-type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
-type AnotherSquareType = { side: float, color: character };
-
-let newCircle: AnotherCircleType = {
-  cx: 0.,
-  cy: 0.,
-  radio: 10.2,
-  color: 'r',
-};
-
-let newSquare: AnotherSquareType, newCircleArea;
-newCircleArea = 3.14 * newCircle.radio * newCircle["radio"];
-
-myCircle.radio = 3;
-myCircle["radio"] = 3;
-myCircle.radio = {
-  side: 10.,
-  color: 'b'
-};
-
-
-
+let b,a  = 2;
+if (a == 2){
+    a = 10;
+}
+if (b == 2){
+  b = fl;
+}
 
 
 
