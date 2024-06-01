@@ -280,8 +280,6 @@ def procesar_property_asignation(p):
 def procesar_function_call(p):
     global variable_table
     name, args = p[1], p[2]
-    
-    
 
     # Tratamiento de error
     if not name in variable_table.keys() or not isinstance(variable_table[name], dict):
@@ -308,12 +306,6 @@ def procesar_function_call(p):
     variable_table = original_variable_table
 
     return result
-
-
-
-    return True
-def procesar_expresion(expresion, tabla_simbolos):
-    pass
 
 def p_conditional(p):
     """
