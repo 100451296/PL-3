@@ -13,6 +13,8 @@ precedence = (
     ('left', 'MULTIPLY', 'DIVISION')  # Multiplication and division
 )
 
+FUNCTION_PROPERTIES = ["args", "return_type", "statements", "return_value"]
+
 # Variable table
 variable_table = {}
 # Object table
@@ -27,24 +29,24 @@ def procesar_stamentList(list):
     for statement in list:
         if statement[0] == "function":
             procesar_function_definition(statement)
-        elif statement[0] == "if":
-            procesar_conditional(statement) #
-        elif statement[0] == "if-else":
-            procesar_conditional_else(statement) #
-        elif statement[0] == "while":
-            procesar_loop(statement)
-        elif statement[0] == "asignation_declaration":
-            procesar_asignation_declaration(statement[1]) #
-        elif statement[0] == "simple_declaration":
-            procesar_simple_declaration(statement[1]) #
-        elif statement[0] == "type_declaration":
-            procesar_type_declaration(statement[1], statement[2]) #
-        elif statement[0] == "asignation":
-            procesar_asignation(statement) #
-        elif statement[0] == "property_asignation": 
-            procesar_property_asignation(statement) #
+        elif statement[0] == "if": # 
+            procesar_conditional(statement) 
+        elif statement[0] == "if-else": # 
+            procesar_conditional_else(statement) 
+        elif statement[0] == "while": # 
+            procesar_loop(statement) 
+        elif statement[0] == "asignation_declaration": # 
+            procesar_asignation_declaration(statement[1]) 
+        elif statement[0] == "simple_declaration": # 
+            procesar_simple_declaration(statement[1]) 
+        elif statement[0] == "type_declaration": # 
+            procesar_type_declaration(statement[1], statement[2]) 
+        elif statement[0] == "asignation": # 
+            procesar_asignation(statement) 
+        elif statement[0] == "property_asignation":  # 
+            procesar_property_asignation(statement) 
         elif statement[0] == "call":
-            procesar_function_call(statement[1], statement[2])
+            procesar_function_call(statement)
 
 def p_statementList(p):
     """
@@ -67,11 +69,14 @@ def p_statement(p):
     """
     p[0] = p[1]
 
-def procesar_statement(statement: tuple, local):
-    pass
-
 def procesar_function_definition(p):
-    pass
+    name = p[1]
+    variable_table[name] = dict()
+    for i, property in enumerate(FUNCTION_PROPERTIES):
+        if property == "args":
+            if p[i+2] == name:
+                raise ValueError(f"arg {p[i+2]} can't have the same name as the function {name}")
+        variable_table[name][property] = p[i+2]
 
 def procesar_conditional(p):
     condition, statementList = p[1], p[2]
@@ -87,7 +92,7 @@ def procesar_conditional_else(p):
     resolve = resolve_value(condition)
     condition = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
     if condition is None:
-        raise TypeError("Condition must be bool or [0, 1]", p)
+        raise TypeError("Condition must be bool or [0, 1]", p, resolve_value(p[1]))
     if condition:
         procesar_stamentList(statementListTrue)
     else:
@@ -144,11 +149,14 @@ def resolve_value(p):
     """
     Esta función resuelve recursivamente cualquier expresión
     """
+    # Caso base objeto
     if isinstance(p, dict):
         aux = dict()
         for key in p.keys():
             aux[key] = resolve_value(p[key])
         return aux
+    elif p is None:
+        return p
     elif p[0] == "binop":
         left, operator, right = p[1], p[2], p[3]
         
@@ -165,10 +173,12 @@ def resolve_value(p):
             right = ("num", resolve_value(right))
             return resolve_binop((None, left, operator, right))
         
+        # Caso base: expresion
         elif left[0] != "binop" and right[0] != "binop":
             return resolve_binop(p)
 
         return resolve_binop(p)
+    # Caso base: variable
     elif p[0] == "id":
         id = p[1]
         if not id in variable_table.keys():
@@ -176,6 +186,7 @@ def resolve_value(p):
         return variable_table[id]
     elif p[0] == "not":
         return not resolve_value(p[1])
+    # Caso base: propiedad de un objeto
     elif p[0] == "object_property":
         id, keys = p[1][0], p[1][1]
         if not id in variable_table.keys():
@@ -186,6 +197,10 @@ def resolve_value(p):
                 raise Exception(f"Property error {current}.{id}")
             current = current[key]
         return current
+    # Caso base: llamada  a funcion
+    elif p[0] == "function_call":
+        
+        return procesar_function_call(p[1])
     else:
         return p[1]
 
@@ -223,11 +238,10 @@ def resolve_binop(p):
                 result = converted_left or converted_right
             else:
                 raise TypeError(f"OR operation requires boolean operands, got {infer_type(converted_left)} and {infer_type(converted_right)}")
-    except TypeError as e:
-        print(f"Type error: {e}")
-        result = None
-    finally:
         return result
+    except TypeError as e:
+        raise TypeError(e)
+
     
 def procesar_simple_declaration(p):    
     for id in p:
@@ -262,9 +276,41 @@ def procesar_property_asignation(p):
         current = current[key]
     previous[key] = resolve_value(value)
 
-def procesar_function_call(p1, p2):
-    pass
+def procesar_function_call(p):
+    global variable_table
+    name, args = p[1], p[2]
+    
+    
 
+    # Tratamiento de error
+    if not name in variable_table.keys() or not isinstance(variable_table[name], dict):
+        raise TypeError(f"Funtion {name} not declared")
+    if not list(variable_table[name].keys()) == FUNCTION_PROPERTIES:
+        raise TypeError(f"Funtion {name} not declared")
+    
+    original_variable_table = variable_table.copy()
+    function_type = variable_table[name]["return_type"]
+    
+    for expression, arg in zip(args, variable_table[name]["args"]):
+        resolve_expression = resolve_value(expression)
+        expression_type  = str(type(resolve_expression)).split("'")[1]
+        # Tratamiento de error
+        if arg[0] != expression_type and not (arg[0] == "character" and expression_type == "str"):
+            raise TypeError(f"Arg {arg[1]} must be {arg[0]} on {name} function")
+        variable_table[arg[1]] = resolve_expression
+
+    procesar_stamentList(variable_table[name]["statements"])    
+    result = resolve_value(variable_table[name]["return_value"])
+    result_type = str(type(result)).split("'")[1]
+    if result_type != function_type and not (function_type == "character" and result_type == "str"):
+        raise TypeError(f"Expected {function_type} where obtained {result_type}")
+    variable_table = original_variable_table
+
+    return result
+
+
+
+    return True
 def procesar_expresion(expresion, tabla_simbolos):
     pass
 
@@ -314,11 +360,11 @@ def p_args_list(p):
               |
     """
     if len(p) == 4:
-        p[0] = [(p[1], p[3])]
+        p[0] = [(p[3], p[1])]
     elif len(p) == 1:
         p[0] = []
     else:
-        p[0] = [(p[1], p[3])] + p[5]
+        p[0] = [(p[3], p[1])] + p[5]
 
 def p_instruction(p):
     """
