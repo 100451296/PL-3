@@ -74,8 +74,9 @@ def procesar_function_definition(p):
     variable_table[name] = dict()
     for i, property in enumerate(FUNCTION_PROPERTIES):
         if property == "args":
-            if p[i+2] == name:
-                raise ValueError(f"arg {p[i+2]} can't have the same name as the function {name}")
+            for arg in p[i+2]:
+                if arg[1] == name:
+                    raise ValueError(f"arg {p[i+2]} can't have the same name as the function {name}")
         variable_table[name][property] = p[i+2]
 
 def procesar_conditional(p):
