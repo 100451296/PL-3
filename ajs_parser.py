@@ -81,8 +81,11 @@ def procesar_function_definition(p):
     for i, property in enumerate(FUNCTION_PROPERTIES):
         if property == "args":
             for arg in p[i+2]:
+                # Tratamiento de errores
                 if arg[1] == name:
                     raise ValueError(f"arg {p[i+2]} can't have the same name as the function {name}")
+                if arg[0] not in object_table.keys():
+                    raise TypeError(f"Type undefined {arg[0]} on {name} variable")
         variable_table[name][property] = p[i+2]
 
 def procesar_conditional(p):
@@ -125,10 +128,12 @@ def procesar_asignation_declaration(p):
     for id in p[1]:
         if isinstance(id, tuple): # Caso de objeto
             object_id, type, value = id[0], id[1], p[2]
+            # Tratamineto de errores
             if object_id in variable_table.keys():
                 raise Exception(f"Redefinition {object_id}")   
             if not type in object_table.keys():
                 raise TypeError(f"type {object_id} not defined")
+            # Tratamiento tipo de objeto
             aux_dict = infer_value_type(value)
             expected_dict = object_table[type]
             differences = compare_dictionaries(expected_dict, aux_dict)
@@ -156,6 +161,8 @@ def infer_value_type(dict_param):
 def compare_dictionaries(expected_dict, actual_dict, path=""):
     differences = {}
     for key in expected_dict.keys():
+        if not key in actual_dict.keys():
+            raise ValueError(f"Missing {key} property")
         expected_type = expected_dict[key]
         actual_type = actual_dict.get(key, 'missing')
         
@@ -234,8 +241,9 @@ def resolve_binop(p):
     Esta función resuelve una expresión de tipo binop (value1 op value2)
     """
     left, operator, right = resolve_value(p[1]), p[2], resolve_value(p[3])
-
     try:
+        if isinstance(left, dict) or isinstance(right, dict):
+            raise TypeError("Cannot operate with type object")
         # Convert types if necessary
         converted_left, converted_right = convert_if_possible(left, right)
         result = None
@@ -313,12 +321,15 @@ def procesar_function_call(p):
     original_variable_table = variable_table.copy()
     function_type = variable_table[name]["return_type"]
     
+    # Almacena los parametros en la tabla de variables
     for expression, arg in zip(args, variable_table[name]["args"]):
         resolve_expression = resolve_value(expression)
         expression_type  = str(type(resolve_expression)).split("'")[1]
+        
         # Tratamiento de error
         if arg[0] != expression_type and not (arg[0] == "character" and expression_type == "str"):
             raise TypeError(f"Arg {arg[1]} must be {arg[0]} on {name} function")
+        
         variable_table[arg[1]] = resolve_expression
 
     # PENDIENTE: Manejo de los tipos de objetos
@@ -425,8 +436,6 @@ def p_declaration_identifier(p):
                            | STRING COLON STRING
                            | STRING COLON STRING COMMA declaration_identifier
     """
-
-    # TRATAMIENTO ERRORES PENDIENTE
     if len(p) == 2:
         p[0] = [p[1]]
     elif len(p) == 4 and p[2] == ":":
@@ -552,10 +561,12 @@ def infer_type(value):
         return 'float'
     elif isinstance(value, str) and len(value) == 1:  # Assuming a single character is a 'character'
         return 'character'
+
    
     # Expand this function as needed
 
 def convert_if_possible(left, right):
+    # PENDIENTE: tipos de objetos
     left_type = infer_type(left)
     right_type = infer_type(right)
     if left_type == right_type:
