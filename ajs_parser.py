@@ -14,6 +14,12 @@ precedence = (
 )
 
 FUNCTION_PROPERTIES = ["args", "return_type", "statements", "return_value"]
+CONVERSION_TYPES = {
+    "int": "int",
+    "float": "float",
+    "str": "character",
+    "bool": "boolean"
+}
 
 # Variable table
 variable_table = {}
@@ -315,6 +321,7 @@ def procesar_function_call(p):
             raise TypeError(f"Arg {arg[1]} must be {arg[0]} on {name} function")
         variable_table[arg[1]] = resolve_expression
 
+    # PENDIENTE: Manejo de los tipos de objetos
     procesar_stamentList(variable_table[name]["statements"])    
     result = resolve_value(variable_table[name]["return_value"])
     result_type = str(type(result)).split("'")[1]
