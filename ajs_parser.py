@@ -318,6 +318,11 @@ def procesar_function_call(p):
     procesar_stamentList(variable_table[name]["statements"])    
     result = resolve_value(variable_table[name]["return_value"])
     result_type = str(type(result)).split("'")[1]
+
+    # Transforma los tipos de Python a los tipos de nuestro lenguaje
+    result_type = "character" if result_type == "str" else result_type
+    result_type = "boolean" if result_type == "bool" else result_type
+
     if result_type != function_type and not (function_type == "character" and result_type == "str"):
         raise TypeError(f"Expected {function_type} where obtained {result_type}")
     variable_table = original_variable_table

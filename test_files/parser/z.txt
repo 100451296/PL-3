@@ -33,7 +33,6 @@ let b = 100;
 
 
 let result = div(newCircle.radio, newCircle.cy);
-*/
 
 type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
 
@@ -52,3 +51,53 @@ function div(a: float, b: float): int {
     }
     return temp;
 }
+*/
+
+
+
+
+
+let a = 5;
+
+
+function par(a: int): boolean {
+  // Esta función devuelve true si el numero es par
+  let r;
+  while (a > 1){
+    a = a - 2;
+  }
+  if (a == 0){
+    r = tr;
+  }
+  else {
+    r = fl;
+  }
+  return r;
+}
+
+let par_variable = par(10);
+let impar_variable = par(121);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
