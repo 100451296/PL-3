@@ -24,22 +24,27 @@ mySquare: SquareType = {
 
 
 let b =  1;
-*/
 
 let a  = 10;
 let b = 100;
 
 
+
+
+
+let result = div(newCircle.radio, newCircle.cy);
+*/
+
 type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
 
 let newCircle: AnotherCircleType = {
-  cx: 0.,
-  cy: 10,
-  radio: 100,
+  cx: 'a',
+  cy: 10.5,
+  radio: 100.5,
   color: 'r',
 };
 
-function div(a: int, b: int): int {
+function div(a: float, b: float): int {
     let temp = 0;
     while (a > 0) {
         a = a - b;
@@ -47,19 +52,3 @@ function div(a: int, b: int): int {
     }
     return temp;
 }
-
-
-let result = div(newCircle.radio, newCircle.cy);
-
-
-
-
-
-
-
-
-
-
-
-
-

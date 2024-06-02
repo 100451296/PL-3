@@ -123,28 +123,45 @@ def procesar_asignation_declaration(p):
                 raise Exception(f"Redefinition {object_id}")   
             if not type in object_table.keys():
                 raise TypeError(f"type {object_id} not defined")
-            # PENDIENTE: comprobar que el valor concuerde con el tipo
+            aux_dict = infer_value_type(value)
+            expected_dict = object_table[type]
+            differences = compare_dictionaries(expected_dict, aux_dict)
+            if differences:
+                diff_messages = [f"{path} expected {exp} got {act}" for path, (exp, act) in differences.items()]
+                diff_message = ", ".join(diff_messages)
+                raise TypeError(f"Variable {object_id} of type {type} in property {diff_message}")
+            
             variable_table[object_id] = resolve_value(value)
             continue
         if id in variable_table.keys():
             raise Exception(f"Redefinition {id}")  
         variable_table[id] = resolve_value(p[2])
-        # PENDIENTE: Hacer tratamiento de valor para propiedades de objetos
 
-def compare_dictionaries(dict1, dict2):
-    # Verificar si tienen las mismas claves
-    if set(dict1.keys()) != set(dict2.keys()):
-        return False
+def infer_value_type(dict_param):
+    aux_dict = {}
+    for key, value in dict_param.items():
+        if isinstance(value, tuple):
+            aux_dict[key] = value[0]
+        if isinstance(value, dict):
+            recursive_aux = infer_value_type(value)
+            aux_dict[key] = recursive_aux
+    return aux_dict
 
-    # Verificar los tipos de los valores asociados a las claves
-    for key in dict1.keys():
-        if key in dict2:
-            value1 = dict1[key]
-            value2 = dict2[key]
-            if type(value1) != type(value2):
-                return False
-
-    return True
+def compare_dictionaries(expected_dict, actual_dict, path=""):
+    differences = {}
+    for key in expected_dict.keys():
+        expected_type = expected_dict[key]
+        actual_type = actual_dict.get(key, 'missing')
+        
+        current_path = f"{path}.{key}" if path else key
+        
+        if isinstance(expected_type, dict) and isinstance(actual_type, dict):
+            nested_differences = compare_dictionaries(expected_type, actual_type, current_path)
+            differences.update(nested_differences)
+        elif expected_type != actual_type:
+            differences[current_path] = (expected_type, actual_type)
+    
+    return differences
 
 def resolve_value(p):
     """
@@ -486,16 +503,7 @@ def p_type_pairs(p):
 
 def p_type_pair(p):
     "type_pair : key COLON type"
-    if p[3] == "float":
-        p[0] = (p[1], 0.0)
-    elif p[3] == "int":
-        p[0] = (p[1], 0)
-    elif p[3] == "character":
-        p[0] = (p[1], "")
-    elif p[3] == "boolean":
-        p[0] = (p[1], True)
-    else:
-        p[0] = (p[1], p[3])
+    p[0] = (p[1], p[3])
 
 def p_key(p):
     """
@@ -582,7 +590,11 @@ def p_expression_number(p):
                 | OCTAL
                 | BINARY
     """
-    p[0] = ('int', p[1])
+    if isinstance(p[1], int):
+        p[0] = ('int', p[1])
+    else:
+        p[0] = ('float', p[1])
+    
 
 def p_expression_character(p):
     """
