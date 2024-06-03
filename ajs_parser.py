@@ -166,78 +166,92 @@ def p_statement(p):
     p[0] = p[1]
 
 def procesar_function_definition(p):
-    name = p[1]
-    variable_table[name] = [dict(), "function"]
-    for i, property in enumerate(FUNCTION_PROPERTIES):
-        if property == "args":
-            for arg in p[i+2]:
-                # Tratamiento de errores
-                if arg[1] == name:
-                    raise ValueError(f"arg {p[i+2]} can't have the same name as the function {name}")
-                if arg[0] not in object_table.keys():
-                    raise TypeError(f"Type undefined {arg[0]} on {name} variable")
-        variable_table[name][0][property] = p[i+2]
-
+    try:
+        name = p[1]
+        variable_table[name] = [dict(), "function"]
+        for i, property in enumerate(FUNCTION_PROPERTIES):
+            if property == "args":
+                for arg in p[i+2]:
+                    # Tratamiento de errores
+                    if arg[1] == name:
+                        raise ValueError(f"arg {p[i+2]} can't have the same name as the function {name}")
+                    if arg[0] not in object_table.keys():
+                        raise TypeError(f"Type undefined {arg[0]} on {name} variable")
+            variable_table[name][0][property] = p[i+2]
+    except Exception as e:
+        print(e)
 def procesar_conditional(p):
-    condition, statementList = p[1], p[2]
-    resolve = resolve_value(condition)
-    condition = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
-    if condition is None:
-        raise TypeError("Condition must be bool or [0, 1]", p)
-    if condition:
-        procesar_stamentList(statementList)
+    try:
+        condition, statementList = p[1], p[2]
+        resolve = resolve_value(condition)
+        condition = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
+        if condition is None:
+            raise TypeError("Condition must be bool or [0, 1]", p)
+        if condition:
+            procesar_stamentList(statementList)
+    except Exception as e:
+        print(e)
 
 def procesar_conditional_else(p):
-    condition, statementListTrue, statementListFalse = p[1], p[2], p[3]
-    resolve = resolve_value(condition)
-    condition = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
-    if condition is None:
-        raise TypeError("Condition must be bool or [0, 1]", p, resolve_value(p[1]))
-    if condition:
-        procesar_stamentList(statementListTrue)
-    else:
-        procesar_stamentList(statementListFalse)
+    try:
+        condition, statementListTrue, statementListFalse = p[1], p[2], p[3]
+        resolve = resolve_value(condition)
+        condition = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
+        if condition is None:
+            raise TypeError("Condition must be bool or [0, 1]", p, resolve_value(p[1]))
+        if condition:
+            procesar_stamentList(statementListTrue)
+        else:
+            procesar_stamentList(statementListFalse)
+    except Exception as e:
+        print(e)
         
 def procesar_loop(p):
-    condition, statementList = p[1], p[2]
-    resolve = resolve_value(condition)
-    
-    # Tratamiento de error
-    resolve = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
-    if resolve is None:
-        raise TypeError("Condition must be bool or [0, 1]", p)
-    
-    while resolve:
-        procesar_stamentList(statementList)
+    try:
+        condition, statementList = p[1], p[2]
         resolve = resolve_value(condition)
+        
+        # Tratamiento de error
         resolve = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
         if resolve is None:
             raise TypeError("Condition must be bool or [0, 1]", p)
+        
+        while resolve:
+            procesar_stamentList(statementList)
+            resolve = resolve_value(condition)
+            resolve = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
+            if resolve is None:
+                raise TypeError("Condition must be bool or [0, 1]", p)
+    except Exception as e:
+        print(e)
 
-def procesar_asignation_declaration(p):    
-    for id in p[1]:
-        if isinstance(id, tuple): # Caso de objeto
-            object_id, type, value = id[0], id[1], p[2]
-            # Tratamineto de errores
-            if object_id in variable_table.keys():
-                raise Exception(f"Redefinition {object_id}")   
-            if not type in object_table.keys():
-                raise TypeError(f"type {object_id} not defined")
-            # Tratamiento tipo de objeto
-            aux_dict = infer_value_type(value)
-            expected_dict = object_table[type]
-            differences = compare_dictionaries(expected_dict, aux_dict)
-            if differences:
-                diff_messages = [f"{path} expected {exp} got {act}" for path, (exp, act) in differences.items()]
-                diff_message = ", ".join(diff_messages)
-                raise TypeError(f"Variable {object_id} of type {type} in property {diff_message}")
-            
-            variable_table[object_id] = [resolve_value(value), type]
-            continue
-        if id in variable_table.keys():
-            raise Exception(f"Redefinition {id}")  
-        resolved = resolve_value(p[2])
-        variable_table[id] = [resolved, infer_type(resolved)]
+def procesar_asignation_declaration(p):  
+    try:  
+        for id in p[1]:
+            if isinstance(id, tuple): # Caso de objeto
+                object_id, type, value = id[0], id[1], p[2]
+                # Tratamineto de errores
+                if object_id in variable_table.keys():
+                    raise Exception(f"Redefinition {object_id}")   
+                if not type in object_table.keys():
+                    raise TypeError(f"type {object_id} not defined")
+                # Tratamiento tipo de objeto
+                aux_dict = infer_value_type(value)
+                expected_dict = object_table[type]
+                differences = compare_dictionaries(expected_dict, aux_dict)
+                if differences:
+                    diff_messages = [f"{path} expected {exp} got {act}" for path, (exp, act) in differences.items()]
+                    diff_message = ", ".join(diff_messages)
+                    raise TypeError(f"Variable {object_id} of type {type} in property {diff_message}")
+                
+                variable_table[object_id] = [resolve_value(value), type]
+                continue
+            if id in variable_table.keys():
+                raise Exception(f"Redefinition {id}")  
+            resolved = resolve_value(p[2])
+            variable_table[id] = [resolved, infer_type(resolved)]
+    except Exception as e:
+        print(e)
         
 
 def infer_value_type(dict_param):
@@ -370,15 +384,18 @@ def resolve_binop(p):
 
     
 def procesar_simple_declaration(p):    
-    for id in p:
-        if isinstance(id, tuple): # Caso objeto
-            if not id[1] in object_table.keys():
-                raise TypeError(f"type {id[1]} not defined")
-            variable_table[id[0]] = [object_table[id[1]], id[1]]
-            continue
-        if id in variable_table.keys():
-            raise Exception(f"Redefinition {id}")  
-        variable_table[id] = [None, None]  
+    try:
+        for id in p:
+            if isinstance(id, tuple): # Caso objeto
+                if not id[1] in object_table.keys():
+                    raise TypeError(f"type {id[1]} not defined")
+                variable_table[id[0]] = [object_table[id[1]], id[1]]
+                continue
+            if id in variable_table.keys():
+                raise Exception(f"Redefinition {id}")  
+            variable_table[id] = [None, None]  
+    except Exception as e:
+        print(e)
 
 def procesar_type_declaration(p1, p2):
     object_table[p1] = p2
@@ -421,62 +438,68 @@ def infer_type_object_par(toke: dict) -> dict:
     return aux_dict
 
 def procesar_property_asignation(p):
-    id, keys, value = p[1], p[2], p[3]
-    if not id in variable_table.keys():
-        raise Exception(f"variable not declared {id}")
-    current = variable_table[id][0]
-    for key in keys:
-        previous = current
-        current = current[key]
-    previous[key] = resolve_value(value)
+    try:
+        id, keys, value = p[1], p[2], p[3]
+        if not id in variable_table.keys():
+            raise Exception(f"variable not declared {id}")
+        current = variable_table[id][0]
+        for key in keys:
+            previous = current
+            current = current[key]
+        previous[key] = resolve_value(value)
+    except Exception as e:
+        print(e)
 
 def procesar_function_call(p):
-    global variable_table
-    name, args = p[1], p[2]
-
-    # Tratamiento de error
-    if not name in variable_table.keys() or not isinstance(variable_table[name][0], dict):
-        raise TypeError(f"Funtion {name} not declared")
-    if not list(variable_table[name][0].keys()) == FUNCTION_PROPERTIES:
-        raise TypeError(f"Funtion {name} not declared")
-    
-    original_variable_table = variable_table.copy()
-    function_type = variable_table[name][0]["return_type"]
-    
-    # Almacena los parametros en la tabla de variables
-    for expression, arg in zip(args, variable_table[name][0]["args"]):
-        resolve_expression = resolve_value(expression)
-        expression_type  = str(type(resolve_expression)).split("'")[1]
-        if expression_type != "dict":
-            expression_type = CONVERSION_TYPES[expression_type]
-        else:
-            expression_type = variable_table[expression[1]][1]
+    try:
+        global variable_table
+        name, args = p[1], p[2]
 
         # Tratamiento de error
-        if arg[0] != expression_type:
-            raise TypeError(f"Arg {arg[1]} must be {arg[0]} on {name} function")
+        if not name in variable_table.keys() or not isinstance(variable_table[name][0], dict):
+            raise TypeError(f"Funtion {name} not declared")
+        if not list(variable_table[name][0].keys()) == FUNCTION_PROPERTIES:
+            raise TypeError(f"Funtion {name} not declared")
         
-        variable_table[arg[1]] = [resolve_expression, infer_type(resolve_expression)]
+        original_variable_table = variable_table.copy()
+        function_type = variable_table[name][0]["return_type"]
+        
+        # Almacena los parametros en la tabla de variables
+        for expression, arg in zip(args, variable_table[name][0]["args"]):
+            resolve_expression = resolve_value(expression)
+            expression_type  = str(type(resolve_expression)).split("'")[1]
+            if expression_type != "dict":
+                expression_type = CONVERSION_TYPES[expression_type]
+            else:
+                expression_type = variable_table[expression[1]][1]
 
-    # PENDIENTE: Manejo de los tipos de objetos
-    procesar_stamentList(variable_table[name][0]["statements"])    
-    result = resolve_value(variable_table[name][0]["return_value"])
-    result_type = str(type(result)).split("'")[1]
+            # Tratamiento de error
+            if arg[0] != expression_type:
+                raise TypeError(f"Arg {arg[1]} must be {arg[0]} on {name} function")
+            
+            variable_table[arg[1]] = [resolve_expression, infer_type(resolve_expression)]
 
-    if result_type != "dict":
-            result_type = CONVERSION_TYPES[result_type]
-    else:
-        result_dict = infer_type_object(result)
-        for key, value in object_table.items():
-            if result_dict == value:
-                result_type = key
-       
+        # PENDIENTE: Manejo de los tipos de objetos
+        procesar_stamentList(variable_table[name][0]["statements"])    
+        result = resolve_value(variable_table[name][0]["return_value"])
+        result_type = str(type(result)).split("'")[1]
 
-    if result_type != function_type and not (function_type == "character" and result_type == "str"):
-        raise TypeError(f"Expected {function_type} where obtained {result_type}")
-    variable_table = original_variable_table
+        if result_type != "dict":
+                result_type = CONVERSION_TYPES[result_type]
+        else:
+            result_dict = infer_type_object(result)
+            for key, value in object_table.items():
+                if result_dict == value:
+                    result_type = key
+        
 
-    return result
+        if result_type != function_type and not (function_type == "character" and result_type == "str"):
+            raise TypeError(f"Expected {function_type} where obtained {result_type}")
+        variable_table = original_variable_table
+
+        return result
+    except Exception as e:
+        print(e)
 
 def p_conditional(p):
     """
@@ -718,21 +741,24 @@ def infer_type_object(value):
     # Expand this function as needed
 
 def convert_if_possible(left, right):
-    # PENDIENTE: tipos de objetos
-    left_type = infer_type(left)
-    right_type = infer_type(right)
-    if left_type == right_type:
-        return left, right
-    elif left_type == 'character' and right_type == 'int':
-        return ord(left), right
-    elif left_type == 'int' and right_type == 'float':
-        return float(left), right
-    elif right_type == 'character' and left_type == 'int':
-        return left, ord(right)
-    elif right_type == 'int' and left_type == 'float':
-        return left, float(right)
-    else:
-        raise TypeError(f"Cannot operate between types {left_type} and {right_type}")
+    try:
+        # PENDIENTE: tipos de objetos
+        left_type = infer_type(left)
+        right_type = infer_type(right)
+        if left_type == right_type:
+            return left, right
+        elif left_type == 'character' and right_type == 'int':
+            return ord(left), right
+        elif left_type == 'int' and right_type == 'float':
+            return float(left), right
+        elif right_type == 'character' and left_type == 'int':
+            return left, ord(right)
+        elif right_type == 'int' and left_type == 'float':
+            return left, float(right)
+        else:
+            raise TypeError(f"Cannot operate between types {left_type} and {right_type}")
+    except Exception as e:
+        print(e)
 
 def p_expression_binop(p):
     """expression : expression PLUS expression
