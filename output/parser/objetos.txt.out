@@ -1,0 +1,3 @@
+('=', ('myCircle', ['radio']), ' ', 'radioValue')
+('=', ('myCircle', ['radio']), ' ', 'radioValue')
+('=', 0.002, ' ', 'myCircleradio')

@@ -1,0 +1,7 @@
+a: [True, 'boolean']
+b: [0.1, 'float']
+n: ['a', 'character']
+obj: [{'prop1': 'a', 'prop2': 2}, 'object']
+c: [None, None]
+d: [None, None]
+f: [None, None]

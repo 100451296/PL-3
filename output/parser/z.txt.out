@@ -1,0 +1,10 @@
+('=', 2, ' ', 'a')
+('==', 2, 3, 't0')
+('gotoc', 't0', 'L1')
+('label', 'L1')
+('=', 2, ' ', 'a')
+('goto', 'L0')
+('label', 'L0')
+param a
+param a
+call mod,2

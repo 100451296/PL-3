@@ -1,0 +1,7 @@
+int: None
+float: None
+character: None
+boolean: None
+CircleType: {'cx': 'float', 'cy': 'float', 'radio': 'float', 'color': 'character'}
+SquareType: {'side': 'float', 'color': 'character'}
+HouseType: {'location': {'city': 'character', 'country': 'character'}, 'price': {'euro': {'price': 'int'}, 'dollar': 'int', 'yen': 'int'}}

@@ -913,11 +913,12 @@ parser = yacc.yacc()
 
 
 def parse_data(data):
+    global code
     parsed_data = parser.parse(data)
     print(parsed_data)
     print("Tabla de variables:", variable_table)
     print("Tabla de objetos:", object_table)
-    return variable_table, object_table
+    return variable_table, object_table, code
 
 # Test cases
 if __name__ == "__main__":

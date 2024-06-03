@@ -36,11 +36,12 @@ def main():
     if args.par:
         try:
             # coge el archivo pasado por linea de comando o el string si no se le pasa nada
-            variable_table, object_table = parse_data(data)
+            variable_table, object_table, code = parse_data(data)
             
             # Nombres de los archivos de salida
             symbol_output_file = f"{PARSER_OUTPUT_DIR}{os.path.basename(args.input_file)}.symbol"
             register_output_file = f"{PARSER_OUTPUT_DIR}{os.path.basename(args.input_file)}.register"
+            middle_output_file = f"{PARSER_OUTPUT_DIR}{os.path.basename(args.input_file)}.out"
             
             # Guarda la tabla de variables en el archivo .symbol
             with open(symbol_output_file, 'w') as symbol_file:
@@ -51,6 +52,12 @@ def main():
             with open(register_output_file, 'w') as register_file:
                 for key, value in object_table.items():
                     register_file.write(f"{key}: {value}\n")
+
+            # Guarda el codigo intermedio en el archivo .out
+            with open(middle_output_file, 'w') as middle_file:
+                for tupla in code:
+                    # Convierte la tupla en una cadena de texto y escribe en el archivo
+                    middle_file.write(str(tupla) + '\n')
         except Exception as e:
             print("Error al analizar:", str(e))
 

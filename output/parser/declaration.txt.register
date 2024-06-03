@@ -1,0 +1,5 @@
+int: None
+float: None
+character: None
+boolean: None
+object: {'prop1': 'character', 'prop2': 'int'}

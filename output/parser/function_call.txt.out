@@ -1,0 +1,9 @@
+('=', 0, ' ', 'var2')
+param ('var1', ['nested', 'prop2'])
+param var2
+('=', 'call gte,2', ' ', 'h')
+('=', 1, ' ', 'b')
+('=', 2, ' ', 'a')
+param newCircle
+param b
+('=', 'call div,2', ' ', 'h')

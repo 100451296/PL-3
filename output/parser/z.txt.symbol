@@ -1,0 +1,3 @@
+a: [2, 'int']
+myCircle: [{'cx': 0.0, 'cy': 0.0, 'radio': 10.2, 'color': 'r'}, 'CircleType']
+mod: [{'args': [('int', 'a'), ('int', 'b')], 'return_type': 'int', 'statements': [('while', ('binop', ('id', 'a'), '>=', ('id', 'b')), [('asignation', ['a'], ('binop', ('id', 'a'), '-', ('id', 'b')))])], 'return_value': ('id', 'a')}, 'function']

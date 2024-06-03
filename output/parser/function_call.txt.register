@@ -1,0 +1,7 @@
+int: None
+float: None
+character: None
+boolean: None
+NestedObject: {'this is': 'character', 'prop2': 'int', 'prop3': 'boolean'}
+Object: {'prop1': 'float', 'nested': 'NestedObject'}
+AnotherCircleType: {'cx': 'float', 'cy': 'float', 'radio': 'float', 'color': 'character'}

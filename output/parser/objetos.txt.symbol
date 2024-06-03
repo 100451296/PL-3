@@ -1,0 +1,6 @@
+myCircle: [{'cx': 0.0, 'cy': 0.0, 'radio': 0.002, 'color': 'r'}, 'CircleType']
+anotherCircle: [{'cx': 0.0, 'cy': 0.0, 'radio': 10.2, 'color': 'r'}, 'CircleType']
+thirdCircle: [{'cx': 0.0, 'cy': 0.0, 'radio': 10.2, 'color': 'r'}, 'CircleType']
+mySquare: [{'side': 10.0, 'color': 'b'}, 'SquareType']
+myCircleArea: [None, None]
+radioValue: [10.2, 'float']
