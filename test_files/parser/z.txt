@@ -43,7 +43,8 @@ let newCircle: AnotherCircleType = {
   color: 'r',
 };
 
-function div(a: float, b: float): int {
+
+function div(a: float, b: AnotherCircleType): int {
     let temp = 0;
     while (a > 0) {
         a = a - b;
@@ -51,44 +52,60 @@ function div(a: float, b: float): int {
     }
     return temp;
 }
+
+div(a, newCircle);
+
+
+
 */
 
 
 
 
 
-let a = 5;
+
+type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
+
+let newCircle: AnotherCircleType = {
+  cx: 10.1,
+  cy: 10.5,
+  radio: 100.5,
+  color: 'r',
+};
 
 
-function par(a: int): boolean {
-  // Esta función devuelve true si el numero es par
-  let r;
-  while (a > 1){
-    a = a - 2;
-  }
-  if (a == 0){
-    r = tr;
-  }
-  else {
-    r = fl;
-  }
-  return r;
+
+
+let a;
+let b = 1;
+a = 2;
+
+
+
+
+/*
+'HouseType': {
+        'location': {
+            'city': 'character', 
+            'country': 'character'
+        }, 
+        'price': {
+            'euro': {'price': 'int'}, 
+            'dollar': 'int', 
+            'yen': 'int'
+        }
+    },
+
+
+
+{
+
+  id : [
+    value,
+    type
+  ]
 }
-
-let par_variable = par(10);
-let impar_variable = par(121);
-
-
-
-
-
-
-
-
-
-
-
-
+*/
 
 
 

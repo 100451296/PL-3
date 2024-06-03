@@ -77,7 +77,7 @@ def p_statement(p):
 
 def procesar_function_definition(p):
     name = p[1]
-    variable_table[name] = dict()
+    variable_table[name] = [dict(), "function"]
     for i, property in enumerate(FUNCTION_PROPERTIES):
         if property == "args":
             for arg in p[i+2]:
@@ -86,7 +86,7 @@ def procesar_function_definition(p):
                     raise ValueError(f"arg {p[i+2]} can't have the same name as the function {name}")
                 if arg[0] not in object_table.keys():
                     raise TypeError(f"Type undefined {arg[0]} on {name} variable")
-        variable_table[name][property] = p[i+2]
+        variable_table[name][0][property] = p[i+2]
 
 def procesar_conditional(p):
     condition, statementList = p[1], p[2]
@@ -142,11 +142,13 @@ def procesar_asignation_declaration(p):
                 diff_message = ", ".join(diff_messages)
                 raise TypeError(f"Variable {object_id} of type {type} in property {diff_message}")
             
-            variable_table[object_id] = resolve_value(value)
+            variable_table[object_id] = [resolve_value(value), type]
             continue
         if id in variable_table.keys():
             raise Exception(f"Redefinition {id}")  
-        variable_table[id] = resolve_value(p[2])
+        resolved = resolve_value(p[2])
+        variable_table[id] = [resolved, infer_type(resolved)]
+        
 
 def infer_value_type(dict_param):
     aux_dict = {}
@@ -214,7 +216,7 @@ def resolve_value(p):
         id = p[1]
         if not id in variable_table.keys():
             raise Exception(f"Variable not declared {id}")
-        return variable_table[id]
+        return variable_table[id][0]
     elif p[0] == "not":
         return not resolve_value(p[1])
     # Caso base: propiedad de un objeto
@@ -222,7 +224,7 @@ def resolve_value(p):
         id, keys = p[1][0], p[1][1]
         if not id in variable_table.keys():
             raise Exception(f"Variable not declared {id}")
-        current = variable_table[id]
+        current = variable_table[id][0]
         for key in keys:
             if not key in current.keys():
                 raise Exception(f"Property error {current}.{id}")
@@ -277,14 +279,14 @@ def resolve_binop(p):
     
 def procesar_simple_declaration(p):    
     for id in p:
-        if isinstance(id, tuple):
+        if isinstance(id, tuple): # Caso objeto
             if not id[1] in object_table.keys():
                 raise TypeError(f"type {id[1]} not defined")
-            variable_table[id[0]] = object_table[id[1]]
+            variable_table[id[0]] = [object_table[id[1]], id[1]]
             continue
         if id in variable_table.keys():
-            raise Exception(f"Redefinition {id}")    
-        variable_table[id] = None
+            raise Exception(f"Redefinition {id}")  
+        variable_table[id[0]] = [None, None]  
 
 def procesar_type_declaration(p1, p2):
     object_table[p1] = p2
@@ -295,7 +297,12 @@ def procesar_asignation(p):
             object_id, value = id, p[2]
             variable_table[object_id] = resolve_value(p[2])
             continue
-        variable_table[id] = resolve_value(p[2])
+        # Los objetos mantienen el tipo
+        if isinstance(variable_table[id][0], dict):
+            variable_table[id] = [resolve_value(p[2]), variable_table[id][1]]
+        else:
+            resolved = resolve_value(p[2])
+            variable_table[id] = [resolved, infer_type(resolved)]
         # PENDIENTE: Hacer tratamiento de valor para propiedades de objetos
 
 def procesar_property_asignation(p):
@@ -306,35 +313,35 @@ def procesar_property_asignation(p):
     for key in keys:
         previous = current
         current = current[key]
-    previous[key] = resolve_value(value)
+    previous[key][0] = resolve_value(value)
 
 def procesar_function_call(p):
     global variable_table
     name, args = p[1], p[2]
 
     # Tratamiento de error
-    if not name in variable_table.keys() or not isinstance(variable_table[name], dict):
+    if not name in variable_table.keys() or not isinstance(variable_table[name][0], dict):
         raise TypeError(f"Funtion {name} not declared")
     if not list(variable_table[name].keys()) == FUNCTION_PROPERTIES:
         raise TypeError(f"Funtion {name} not declared")
     
     original_variable_table = variable_table.copy()
-    function_type = variable_table[name]["return_type"]
+    function_type = variable_table[name][0]["return_type"]
     
     # Almacena los parametros en la tabla de variables
-    for expression, arg in zip(args, variable_table[name]["args"]):
+    for expression, arg in zip(args, variable_table[name][0]["args"]):
         resolve_expression = resolve_value(expression)
         expression_type  = str(type(resolve_expression)).split("'")[1]
-        
+                
         # Tratamiento de error
         if arg[0] != expression_type and not (arg[0] == "character" and expression_type == "str"):
             raise TypeError(f"Arg {arg[1]} must be {arg[0]} on {name} function")
         
-        variable_table[arg[1]] = resolve_expression
+        variable_table[arg[1]] = [resolve_expression, infer_type(resolve_expression)]
 
     # PENDIENTE: Manejo de los tipos de objetos
-    procesar_stamentList(variable_table[name]["statements"])    
-    result = resolve_value(variable_table[name]["return_value"])
+    procesar_stamentList(variable_table[name][0]["statements"])    
+    result = resolve_value(variable_table[name][0]["return_value"])
     result_type = str(type(result)).split("'")[1]
 
     # Transforma los tipos de Python a los tipos de nuestro lenguaje
@@ -562,6 +569,22 @@ def infer_type(value):
     elif isinstance(value, str) and len(value) == 1:  # Assuming a single character is a 'character'
         return 'character'
 
+def infer_type_object(value):
+    # Caso base
+    aux = dict()
+    if isinstance(value, bool):
+        return 'boolean'
+    elif isinstance(value, int):
+        return 'int'
+    elif isinstance(value, float):
+        return 'float'
+    elif isinstance(value, str) and len(value) == 1: 
+        return 'character'
+    # Recursivo
+    elif isinstance(value, dict):
+        for key in value.keys():
+            aux[key] = infer_type_object(value)
+    return aux
    
     # Expand this function as needed
 
