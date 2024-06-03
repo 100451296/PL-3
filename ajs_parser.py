@@ -45,7 +45,30 @@ def generar_intermedio(p):
         elif statement[0] == "while": 
             pass
         elif statement[0] == "asignation_declaration": 
-            pass
+            statement = statement[1]
+            if isinstance(statement[2], dict):
+                continue
+            if statement[2][0] == "binop":
+                binop = statement[2]
+                generar_intermedio_binop(binop)
+                for id in statement[1]:
+                    if isinstance(id, tuple):
+                        code.append(("=",  f"t{current_register}", ' ', id[1]))
+                        continue
+                    code.append(("=",  f"t{current_register}", ' ', id))
+                continue
+            elif statement[2][0] == "function_call":
+                function_name = statement[2][1][1]
+                params = statement[2][1][2]
+                for param in params:
+                        code.append(f"param {param[1]}")
+                for id in statement[1]:
+                    code.append(("=", f"call {function_name},{len(params)}", ' ', id))
+            else:
+                for id in statement[1]:
+                    if isinstance(id, tuple):
+                        code.append(("=",  statement[2][1], ' ', id[1]))
+                code.append(("=",  statement[2][1], ' ', id))
         elif statement[0] == "asignation": 
             if isinstance(statement[2], dict):
                 continue
