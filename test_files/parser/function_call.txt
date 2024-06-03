@@ -45,4 +45,4 @@ function div(a: AnotherCircleType, b: int): AnotherCircleType {
     return { cx: 10.1, cy: 10.5, radio: 100.5, color: 'r'};
 }
 
-let h = div(newCircle, b);
+h = div(newCircle, b);

@@ -297,11 +297,17 @@ def procesar_asignation(p):
     for id in p[1]:
         if isinstance(p[2], dict): # Caso de objeto
             object_id, value = id, p[2]
-            variable_table[object_id] = [resolve_value(p[2]), variable_table[object_id][1]]
-            continue
-        # Los objetos mantienen el tipo
-        if isinstance(variable_table[id][0], dict):
-            variable_table[id] = [resolve_value(p[2]), variable_table[id][1]]
+            aux_dict = dict()
+            for key, value in value.items():
+                aux_dict[key] = value[0]
+            value_type = None
+            for key, object_type in object_table.items():
+                if aux_dict == object_type:
+                    value_type = key
+            if value_type is None:
+                raise TypeError(f"Invalid value on variable {object_id}")
+
+            variable_table[object_id] = [resolve_value(value), variable_table[object_id][1]]
         else:
             resolved = resolve_value(p[2])
             variable_table[id] = [resolved, infer_type(resolved)]

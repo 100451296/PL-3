@@ -78,7 +78,27 @@ let h = div(a, b);
 */
 
 
+type CircleType = { cx: float, cy: float, radio: float, color: character };
+type SquareType = { side: float, color: character };
+type HouseType = { 
+  location: { city: character, country: character }, 
+  price: { 
+    euro: {
+      price: int
+    }, 
+    dollar: int, 
+    yen: int
+  }
+};
 
+let myCircle: CircleType;
+
+myCircle = {
+  cx: 0.,
+  cy: 0.,
+  radio: 10.2,
+  color: 'r',
+};
 
 /*
 'HouseType': {
