@@ -297,14 +297,13 @@ def procesar_asignation(p):
     for id in p[1]:
         if isinstance(p[2], dict): # Caso de objeto
             object_id, value = id, p[2]
-            aux_dict = dict()
-            for key, value in value.items():
-                aux_dict[key] = value[0]
+            aux_dict = infer_type_object_par(value)
             value_type = None
             for key, object_type in object_table.items():
                 if aux_dict == object_type:
                     value_type = key
             if value_type is None:
+                print(aux_dict)
                 raise TypeError(f"Invalid value on variable {object_id}")
 
             variable_table[object_id] = [resolve_value(value), variable_table[object_id][1]]
@@ -312,6 +311,24 @@ def procesar_asignation(p):
             resolved = resolve_value(p[2])
             variable_table[id] = [resolved, infer_type(resolved)]
         # PENDIENTE: Hacer tratamiento de valor para propiedades de objetos
+
+
+def infer_type_object_par(toke: dict) -> dict:
+    aux_dict = dict()
+    for key, value in toke.items():
+        if isinstance(value, dict):
+            aux_dict_type = infer_type_object_par(value)
+            value_type = None
+            for key_type, object_type in object_table.items():
+                if aux_dict_type == object_type:
+                    value_type = key_type
+            if value_type is None:
+                aux_dict[key] = aux_dict_type
+            else:
+                aux_dict[key] = value_type
+            continue
+        aux_dict[key] = value[0]
+    return aux_dict
 
 def procesar_property_asignation(p):
     id, keys, value = p[1], p[2], p[3]

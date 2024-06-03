@@ -2,11 +2,16 @@ type NestedObject = { "this is": character, prop2: int, "prop3": boolean };
 type Object = { prop1: float, "nested": NestedObject };
 
 let var1: Object, var2, var3;
+
 var1 = {
     prop1: 10e-1,
     nested: { "this is": 'A', prop2: 1, prop3: tr }
 };
+
+
+/*
 var2 = 0;
+
 function gte(a: int, b: int): int {
     a = a + b;
     return a;
@@ -46,3 +51,4 @@ function div(a: AnotherCircleType, b: int): AnotherCircleType {
 }
 
 h = div(newCircle, b);
+*/
