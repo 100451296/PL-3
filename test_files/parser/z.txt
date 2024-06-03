@@ -1,44 +1,27 @@
-type SquareType = { side: float, color: character };
+let a = 2;
 
-
-let mySquare: SquareType = {
-  side: 10.,
-  color: 'b'
-};
-
-
-let mySquare: SquareType, a;
-
-a = 1;
-mySquare = {
-  side: 10.,
-  color: 'b'
-};
-
-
-let b =  1;
-
-
-type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
-
-let newCircle: AnotherCircleType = {
-  cx: 11.5,
-  cy: 10.5,
-  radio: 100.5,
-  color: 'r',
-};
-
-
-type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
-
-
-function div(a: int, b: int): int {
-    let temp = 0;
-    while (a > 0) {
-        a = a - b;
-        temp = temp + 1;
-    }
-    return temp;
+if (2 == 3){
+    a = 2;
 }
 
-let h = div(a, b);
+type CircleType = { cx: float, cy: float, radio: float, color: character };
+type SquareType = { side: float, color: character };
+type HouseType = { 
+  location: { city: character, country: character }, 
+  price: { 
+    euro: {
+      price: int
+    }, 
+    dollar: int, 
+    yen: int
+  }
+};
+
+let myCircle: CircleType;
+
+myCircle = {
+  cx: 0.,
+  cy: 0.,
+  radio: 10.2,
+  color: 'r',
+};
