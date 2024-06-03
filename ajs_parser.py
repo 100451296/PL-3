@@ -102,6 +102,7 @@ def procesar_conditional_else(p):
     resolve = resolve_value(condition)
     condition = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
     if condition is None:
+        print("Este es el mensaje de error resolve: ", resolve)
         raise TypeError("Condition must be bool or [0, 1]", p, resolve_value(p[1]))
     if condition:
         procesar_stamentList(statementListTrue)
@@ -182,61 +183,64 @@ def resolve_value(p):
     """
     Esta función resuelve recursivamente cualquier expresión
     """
-    # Caso base objeto
-    if isinstance(p, dict):
-        aux = dict()
-        for key in p.keys():
-            aux[key] = resolve_value(p[key])
-        return aux
-    elif p is None:
-        return p
-    elif p[0] == "binop":
-        left, operator, right = p[1], p[2], p[3]
-        
-        if left[0] == "binop" and right[0] == "binop":
-            left = ("num", resolve_value(left))
-            right = ("num", resolve_value(right))
-            return resolve_binop((None, left, operator, right))
-        
-        elif left[0] == "binop" and right[0] != "binop":
-            left = ("num", resolve_value(left))
-            return resolve_binop((None, left, operator, right))
-        
-        elif left[0] != "binop" and right[0] == "binop":
-            right = ("num", resolve_value(right))
-            return resolve_binop((None, left, operator, right))
-        
-        # Caso base: expresion
-        elif left[0] != "binop" and right[0] != "binop":
+    try:
+        # Caso base objeto
+        if isinstance(p, dict):
+            aux = dict()
+            for key in p.keys():
+                aux[key] = resolve_value(p[key])
+            return aux
+        elif p is None:
+            return p
+        elif p[0] == "binop":
+            left, operator, right = p[1], p[2], p[3]
+            
+            if left[0] == "binop" and right[0] == "binop":
+                left = ("num", resolve_value(left))
+                right = ("num", resolve_value(right))
+                return resolve_binop((None, left, operator, right))
+            
+            elif left[0] == "binop" and right[0] != "binop":
+                left = ("num", resolve_value(left))
+                return resolve_binop((None, left, operator, right))
+            
+            elif left[0] != "binop" and right[0] == "binop":
+                right = ("num", resolve_value(right))
+                return resolve_binop((None, left, operator, right))
+            
+            # Caso base: expresion
+            elif left[0] != "binop" and right[0] != "binop":
+                return resolve_binop(p)
+
             return resolve_binop(p)
+        # Caso base: variable
+        elif p[0] == "id":
+            id = p[1]
+            if not id in variable_table.keys():
+                raise Exception(f"Variable not declared {id}")
+            return variable_table[id][0]
+        elif p[0] == "not":
+            return not resolve_value(p[1])
+        # Caso base: propiedad de un objeto
+        elif p[0] == "object_property":
+            id, keys = p[1][0], p[1][1]
+            if not id in variable_table.keys():
+                raise Exception(f"Variable not declared {id}")
+            current = variable_table[id][0]
+            for key in keys:
+                if not key in current.keys():
+                    raise Exception(f"Property error {current}.{id}")
+                current = current[key]
+            return current
+        # Caso base: llamada  a funcion
+        elif p[0] == "function_call":
+            
+            return procesar_function_call(p[1])
+        else:
+            return p[1]
 
-        return resolve_binop(p)
-    # Caso base: variable
-    elif p[0] == "id":
-        id = p[1]
-        if not id in variable_table.keys():
-            raise Exception(f"Variable not declared {id}")
-        return variable_table[id][0]
-    elif p[0] == "not":
-        return not resolve_value(p[1])
-    # Caso base: propiedad de un objeto
-    elif p[0] == "object_property":
-        id, keys = p[1][0], p[1][1]
-        if not id in variable_table.keys():
-            raise Exception(f"Variable not declared {id}")
-        current = variable_table[id][0]
-        for key in keys:
-            if not key in current.keys():
-                raise Exception(f"Property error {current}.{id}")
-            current = current[key]
-        return current
-    # Caso base: llamada  a funcion
-    elif p[0] == "function_call":
-        
-        return procesar_function_call(p[1])
-    else:
-        return p[1]
-
+    except Exception as e:
+        print(e)
 
 def resolve_binop(p):
     """
@@ -295,7 +299,7 @@ def procesar_asignation(p):
     for id in p[1]:
         if isinstance(p[2], dict): # Caso de objeto
             object_id, value = id, p[2]
-            variable_table[object_id] = resolve_value(p[2])
+            variable_table[object_id] = [resolve_value(p[2]), variable_table[object_id][1]]
             continue
         # Los objetos mantienen el tipo
         if isinstance(variable_table[id][0], dict):
@@ -309,11 +313,11 @@ def procesar_property_asignation(p):
     id, keys, value = p[1], p[2], p[3]
     if not id in variable_table.keys():
         raise Exception(f"variable not declared {id}")
-    current = variable_table[id]
+    current = variable_table[id][0]
     for key in keys:
         previous = current
         current = current[key]
-    previous[key][0] = resolve_value(value)
+    previous[key] = resolve_value(value)
 
 def procesar_function_call(p):
     global variable_table

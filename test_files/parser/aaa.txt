@@ -1,0 +1,42 @@
+
+let radioValueBracket = myCircle["radio"];
+radioValueBracket = myCircle["radio"];
+
+myCircle.radio = 3;
+myCircle["radio"] = 3;
+myCircle.radio = {
+  side: 10.,
+  color: 'b'
+};
+
+type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
+type AnotherSquareType = { side: float, color: character };
+
+let newCircle: AnotherCircleType = {
+  cx: 0.,
+  cy: 0.,
+  radio: 10.2,
+  color: 'r',
+};
+
+let newSquare: AnotherSquareType, newCircleArea;
+newCircleArea = 3.14 * newCircle.radio * newCircle["radio"];
+
+newSquare.side = 10.;  // Error: 'newSquare' no ha sido inicializado
+newSquare = {
+  side: 10.,
+  color: 'b'
+};
+
+let newSquareArea = newSquare.side * newSquare["side"];
+
+let myHouse: HouseType = {
+  location: {
+    city: 'M', country: 'E',
+  },
+  price: {
+    euro: { price: 2 }, "dollar": 108, "yen": 16397
+  },
+};
+
+myHouse["price"]["euro"].price = 100 * 1.1;
