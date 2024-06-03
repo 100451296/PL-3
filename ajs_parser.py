@@ -102,7 +102,6 @@ def procesar_conditional_else(p):
     resolve = resolve_value(condition)
     condition = resolve if isinstance(resolve, bool) or resolve in [0, 1] else None
     if condition is None:
-        print("Este es el mensaje de error resolve: ", resolve)
         raise TypeError("Condition must be bool or [0, 1]", p, resolve_value(p[1]))
     if condition:
         procesar_stamentList(statementListTrue)
@@ -290,8 +289,8 @@ def procesar_simple_declaration(p):
             continue
         if id in variable_table.keys():
             raise Exception(f"Redefinition {id}")  
-        variable_table[id[0]] = [None, None]  
-        
+        variable_table[id] = [None, None]  
+
 def procesar_type_declaration(p1, p2):
     object_table[p1] = p2
 
