@@ -77,11 +77,15 @@ let h = div(a, b);
 
 */
 
-// Operaciones aritméticas y comparación
-let f1, f2;
-let b1;
+let b,a  = 2;
+a = tr && fl;
+a = tr || b * b <= (0b101 * (0702 - 1e-10));
+a = tr && tr || fl;
+a = 2;
+a = tr && !(!tr && !((b * b) == a));
+a = !(2 > 1);
+a = !(tr && fl);
 
-f1 = 5 * 4 + 4 * 4;
 
 /*
 * (*, 5, 4, t1)

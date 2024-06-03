@@ -8,8 +8,6 @@ var1 = {
     nested: { "this is": 'A', prop2: 1, prop3: tr }
 };
 
-
-/*
 var2 = 0;
 
 function gte(a: int, b: int): int {
@@ -51,4 +49,3 @@ function div(a: AnotherCircleType, b: int): AnotherCircleType {
 }
 
 h = div(newCircle, b);
-*/

@@ -47,15 +47,22 @@ def generar_intermedio(p):
         elif statement[0] == "asignation_declaration": 
             pass
         elif statement[0] == "asignation": 
+            if isinstance(statement[2], dict):
+                continue
             if statement[2][0] == "binop":
                 binop = statement[2]
                 generar_intermedio_binop(binop)
-            for id in statement[1]:
-                if isinstance(id, tuple):
-                    code.append(("=",  f"t{current_register}", ' ', id[1]))
-                    continue
-                code.append(("=",  f"t{current_register}", ' ', id))
-
+                for id in statement[1]:
+                    if isinstance(id, tuple):
+                        code.append(("=",  f"t{current_register}", ' ', id[1]))
+                        continue
+                    code.append(("=",  f"t{current_register}", ' ', id))
+                continue
+            else:
+                for id in statement[1]:
+                    if isinstance(id, tuple):
+                        code.append(("=",  statement[2][1], ' ', id[1]))
+                code.append(("=",  statement[2][1], ' ', id))
         elif statement[0] == "property_asignation":  
             pass
         elif statement[0] == "call":
@@ -65,22 +72,23 @@ def generar_intermedio(p):
 def generar_intermedio_binop(binop):
     global code, current_register
     left, op, right = binop[1], binop[2], binop[3]
-    if left[0] != "binop" and right[0] != "binop":
-        current_register += 1
-        code.append((op, left[1], right[1], f"t{current_register}"))
-    elif left[0] != "binop" and right[0] == "binop":
-        generar_intermedio_binop(right)
-        current_register += 1
-        code.append((op, f"t{current_register-1}", left[1], f"t{current_register}"))
-    elif left[0] == "binop" and right[0] != "binop":
-        generar_intermedio_binop(left)
-        current_register += 1
-        code.append((op, f"t{current_register-1}", right[1], f"t{current_register}"))
-    elif left[0] == "binop" and right[0] == "binop":
-        generar_intermedio_binop(left)
-        generar_intermedio_binop(right)
-        current_register += 1
-        code.append((op, f"t{current_register-1}", f"t{current_register-2}", f"t{current_register}"))
+    if not left[0] == "not":
+        if left[0] != "binop" and right[0] != "binop":
+            current_register += 1
+            code.append((op, left[1], right[1], f"t{current_register}"))
+        elif left[0] != "binop" and right[0] == "binop":
+            generar_intermedio_binop(right)
+            current_register += 1
+            code.append((op, f"t{current_register-1}", left[1], f"t{current_register}"))
+        elif left[0] == "binop" and right[0] != "binop":
+            generar_intermedio_binop(left)
+            current_register += 1
+            code.append((op, f"t{current_register-1}", right[1], f"t{current_register}"))
+        elif left[0] == "binop" and right[0] == "binop":
+            generar_intermedio_binop(left)
+            generar_intermedio_binop(right)
+            current_register += 1
+            code.append((op, f"t{current_register-1}", f"t{current_register-2}", f"t{current_register}"))
 
 
 def procesar_stamentList(list):
