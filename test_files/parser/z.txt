@@ -76,10 +76,34 @@ let h = div(a, b);
 
 
 */
-type NestedObject = { "this is": character, prop2: int, "prop3": boolean };
-type Object = { prop1: float, "nested": NestedObject };
 
-let var1: Object, var2, var3;
+
+type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
+
+let newCircle: AnotherCircleType = {
+  cx: 10.1,
+  cy: 10.5,
+  radio: 100.5,
+  color: 'r',
+};
+
+
+
+
+let a;
+let b = 1;
+a = 2;
+
+function div(a: AnotherCircleType, b: int): AnotherCircleType {
+    let temp = 0;
+    while (a.cx > 0) {
+        a.cx = a.cx - b;
+        temp = temp + 1;
+    }
+    return a;
+}
+
+let h = div(newCircle, b);
 
 
 

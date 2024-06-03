@@ -233,7 +233,6 @@ def resolve_value(p):
             return current
         # Caso base: llamada  a funcion
         elif p[0] == "function_call":
-            
             return procesar_function_call(p[1])
         else:
             return p[1]
@@ -335,9 +334,13 @@ def procesar_function_call(p):
     for expression, arg in zip(args, variable_table[name][0]["args"]):
         resolve_expression = resolve_value(expression)
         expression_type  = str(type(resolve_expression)).split("'")[1]
-                
+        if expression_type != "dict":
+            expression_type = CONVERSION_TYPES[expression_type]
+        else:
+            expression_type = variable_table[expression[1]][1]
+
         # Tratamiento de error
-        if arg[0] != expression_type and not (arg[0] == "character" and expression_type == "str"):
+        if arg[0] != expression_type:
             raise TypeError(f"Arg {arg[1]} must be {arg[0]} on {name} function")
         
         variable_table[arg[1]] = [resolve_expression, infer_type(resolve_expression)]
@@ -347,9 +350,14 @@ def procesar_function_call(p):
     result = resolve_value(variable_table[name][0]["return_value"])
     result_type = str(type(result)).split("'")[1]
 
-    # Transforma los tipos de Python a los tipos de nuestro lenguaje
-    result_type = "character" if result_type == "str" else result_type
-    result_type = "boolean" if result_type == "bool" else result_type
+    if result_type != "dict":
+            result_type = CONVERSION_TYPES[result_type]
+    else:
+        result_dict = infer_type_object(result)
+        for key, value in object_table.items():
+            if result_dict == value:
+                result_type = key
+       
 
     if result_type != function_type and not (function_type == "character" and result_type == "str"):
         raise TypeError(f"Expected {function_type} where obtained {result_type}")
@@ -571,6 +579,11 @@ def infer_type(value):
         return 'float'
     elif isinstance(value, str) and len(value) == 1:  # Assuming a single character is a 'character'
         return 'character'
+    elif isinstance(value, dict):
+        result_dict = infer_type_object(value)
+        for key, value in object_table.items():
+            if result_dict == value:
+                return key
 
 def infer_type_object(value):
     # Caso base
@@ -585,9 +598,9 @@ def infer_type_object(value):
         return 'character'
     # Recursivo
     elif isinstance(value, dict):
-        for key in value.keys():
-            aux[key] = infer_type_object(value)
-    return aux
+        for key, v in value.items():
+            aux[key] = infer_type_object(v)
+        return aux
    
     # Expand this function as needed
 
