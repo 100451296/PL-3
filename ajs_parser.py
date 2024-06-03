@@ -32,75 +32,97 @@ def p_program(p):
     "program : statementList"
     procesar_stamentList(p[1])
     generar_intermedio(p[1])
+    print(code)
     p[0] = p[1]
 
 def generar_intermedio(p):
-    global code, current_register
+    try:
+        global code, current_register
 
-    for statement in p:
-        if statement[0] == "if": 
-            pass
-        elif statement[0] == "if-else": 
-            pass 
-        elif statement[0] == "while": 
-            pass
-        elif statement[0] == "asignation_declaration": 
-            statement = statement[1]
-            if isinstance(statement[2], dict):
-                continue
-            if statement[2][0] == "binop":
-                binop = statement[2]
-                generar_intermedio_binop(binop)
-                for id in statement[1]:
-                    if isinstance(id, tuple):
-                        code.append(("=",  f"t{current_register}", ' ', id[1]))
-                        continue
-                    code.append(("=",  f"t{current_register}", ' ', id))
-                continue
-            elif statement[2][0] == "function_call":
-                function_name = statement[2][1][1]
-                params = statement[2][1][2]
-                for param in params:
-                        code.append(f"param {param[1]}")
-                for id in statement[1]:
-                    code.append(("=", f"call {function_name},{len(params)}", ' ', id))
-            else:
-                for id in statement[1]:
-                    if isinstance(id, tuple):
-                        code.append(("=",  statement[2][1], ' ', id[1]))
-                code.append(("=",  statement[2][1], ' ', id))
-        elif statement[0] == "asignation": 
-            if isinstance(statement[2], dict):
-                continue
-            if statement[2][0] == "binop":
-                binop = statement[2]
-                generar_intermedio_binop(binop)
-                for id in statement[1]:
-                    if isinstance(id, tuple):
-                        code.append(("=",  f"t{current_register}", ' ', id[1]))
-                        continue
-                    code.append(("=",  f"t{current_register}", ' ', id))
-                continue
-            elif statement[2][0] == "function_call":
-                function_name = statement[2][1][1]
-                params = statement[2][1][2]
-                for param in params:
-                        code.append(f"param {param[1]}")
-                for id in statement[1]:
-                    code.append(("=", f"call {function_name},{len(params)}", ' ', id))
-            else:
-                for id in statement[1]:
-                    if isinstance(id, tuple):
-                        code.append(("=",  statement[2][1], ' ', id[1]))
-                code.append(("=",  statement[2][1], ' ', id))
-        elif statement[0] == "property_asignation":  
-            pass
-        elif statement[0] == "call":
-            pass
-    print(code)
+        for statement in p:
+            if statement[0] == "if": 
+                condition, stamentList = statement[1], statement[2]
+                generar_intermedio_binop(condition)
+                code.append(('gotoc', f"t{current_register}", "L1"))
+                code.append(('label', 'L1', ))
+                generar_intermedio(stamentList)
+                code.append(('label', 'L0', ))
+            elif statement[0] == "if-else": 
+                condition, stamentListTrue, stamentListFalse = statement[1], statement[2], statement[3]
+                generar_intermedio_binop(condition)
+                code.append(('gotoc', f"t{current_register}", "L1"))
+                code.append(('label', 'L1', ))
+                generar_intermedio(stamentListTrue)
+                code.append(('label', 'L2', ))
+                generar_intermedio(stamentListFalse)
+                code.append(('label', 'L0', ))
+                
+            elif statement[0] == "while": 
+                pass
+            elif statement[0] == "asignation_declaration": 
+                statement = statement[1]
+                if isinstance(statement[2], dict):
+                    continue
+                if statement[2][0] == "binop":
+                    binop = statement[2]
+                    generar_intermedio_binop(binop)
+                    for id in statement[1]:
+                        if isinstance(id, tuple):
+                            code.append(("=",  f"t{current_register}", ' ', id[1]))
+                            continue
+                        code.append(("=",  f"t{current_register}", ' ', id))
+                    continue
+                elif statement[2][0] == "function_call":
+                    function_name = statement[2][1][1]
+                    params = statement[2][1][2]
+                    for param in params:
+                            code.append(f"param {param[1]}")
+                    for id in statement[1]:
+                        code.append(("=", f"call {function_name},{len(params)}", ' ', id))
+                else:
+                    for id in statement[1]:
+                        if isinstance(id, tuple):
+                            code.append(("=",  statement[2][1], ' ', id[1]))
+                            continue
+                        code.append(("=",  statement[2][1], ' ', id))
+            elif statement[0] == "asignation": 
+                if isinstance(statement[2], dict):
+                    continue
+                if statement[2][0] == "binop":
+                    binop = statement[2]
+                    generar_intermedio_binop(binop)
+                    for id in statement[1]:
+                        if isinstance(id, tuple):
+                            code.append(("=",  f"t{current_register}", ' ', id[1]))
+                            continue
+                        code.append(("=",  f"t{current_register}", ' ', id))
+                    continue
+                elif statement[2][0] == "function_call":
+                    function_name = statement[2][1][1]
+                    params = statement[2][1][2]
+                    for param in params:
+                            code.append(f"param {param[1]}")
+                    for id in statement[1]:
+                        code.append(("=", f"call {function_name},{len(params)}", ' ', id))
+                else:
+                    for id in statement[1]:
+                        if isinstance(id, tuple):
+                            code.append(("=",  statement[2][1], ' ', id[1]))
+                            continue
+                        code.append(("=",  statement[2][1], ' ', id))
+            elif statement[0] == "property_asignation":  
+                pass
+            elif statement[0] == "call":
+                pass
+    except Exception as e:
+        print("Error2", e, statement)
 
 def generar_intermedio_binop(binop):
     global code, current_register
+
+    if len(binop) < 4:
+        return
+
     left, op, right = binop[1], binop[2], binop[3]
     if not left[0] == "not":
         if left[0] != "binop" and right[0] != "binop":

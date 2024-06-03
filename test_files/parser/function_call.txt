@@ -17,12 +17,6 @@ function gte(a: int, b: int): int {
 
 let h = gte(var1.nested["prop2"], var2);
 
-if (gte(var1.nested["prop2"], var2)) {
-    var3 = 'Y';
-} else {
-    var3 = 'N';
-}
-
 type AnotherCircleType = { cx: float, cy: float, radio: float, color: character };
 
 let newCircle: AnotherCircleType = {
