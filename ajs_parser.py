@@ -58,6 +58,13 @@ def generar_intermedio(p):
                         continue
                     code.append(("=",  f"t{current_register}", ' ', id))
                 continue
+            elif statement[2][0] == "function_call":
+                function_name = statement[2][1][1]
+                params = statement[2][1][2]
+                for param in params:
+                        code.append(f"param {param[1]}")
+                for id in statement[1]:
+                    code.append(("=", f"call {function_name},{len(params)}", ' ', id))
             else:
                 for id in statement[1]:
                     if isinstance(id, tuple):
