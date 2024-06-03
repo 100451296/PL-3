@@ -121,8 +121,23 @@ def generar_intermedio(p):
                             code.append(("=",  statement[2][1], ' ', id[1]))
                             continue
                         code.append(("=",  statement[2][1], ' ', id))
-            elif statement[0] == "property_asignation":  
-                print("asd", statement)
+            elif statement[0] == "property_asignation": 
+                object_id, properties, value = statement[1], statement[2], statement[3] 
+                id_properties = object_id + '.'.join(properties)
+                if isinstance(value, dict):
+                    continue
+                if value[0] == "binop":
+                    generar_intermedio_binop(value)
+                    code.append(("=",  f"t{current_register}", ' ', id_properties))
+                    continue
+                elif value[0] == "function_call":
+                    function_name = statement[2][1][1]
+                    params = statement[2][1][2]
+                    for param in params:
+                            code.append(f"param {param[1]}")
+                    code.append(("=", f"call {function_name},{len(params)}", ' ', id_properties))
+                else:
+                    code.append(("=",  value[1], ' ', id_properties))
             elif statement[0] == "call":
                 function_name = statement[1]
                 params = statement[2]

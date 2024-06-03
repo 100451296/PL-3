@@ -36,3 +36,4 @@ mySquare = {
 
 let radioValue = myCircle.radio;
 radioValue = myCircle.radio;
+myCircle.radio = 0.002;
