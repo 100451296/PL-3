@@ -77,28 +77,23 @@ let h = div(a, b);
 
 */
 
+// Operaciones aritméticas y comparación
+let f1, f2;
+let b1;
 
-type CircleType = { cx: float, cy: float, radio: float, color: character };
-type SquareType = { side: float, color: character };
-type HouseType = { 
-  location: { city: character, country: character }, 
-  price: { 
-    euro: {
-      price: int
-    }, 
-    dollar: int, 
-    yen: int
-  }
-};
+f1 = 5 * 4 + 4 * 4;
 
-let myCircle: CircleType;
+/*
+* (*, 5, 4, t1)
+* (/ , 80, 10, t2)
+* (- , t1, t2, t3)
+* (=, t3, , f1)
+* (/, 10, 5, t4)
+* (*, t4, t3, f1)
+* (<, 5, 3, b1)
+*/
 
-myCircle = {
-  cx: 0.,
-  cy: 0.,
-  radio: 10.2,
-  color: 'r',
-};
+
 
 /*
 'HouseType': {

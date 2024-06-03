@@ -23,13 +23,65 @@ CONVERSION_TYPES = {
 
 # Variable table
 variable_table = {}
+code = []
+current_register = -1
 # Object table
 object_table = {"int" : None, "float" : None, "character" : None, "boolean" : None}
 
 def p_program(p):
     "program : statementList"
     procesar_stamentList(p[1])
+    generar_intermedio(p[1])
     p[0] = p[1]
+
+def generar_intermedio(p):
+    global code, current_register
+
+    for statement in p:
+        if statement[0] == "if": 
+            pass
+        elif statement[0] == "if-else": 
+            pass 
+        elif statement[0] == "while": 
+            pass
+        elif statement[0] == "asignation_declaration": 
+            pass
+        elif statement[0] == "asignation": 
+            if statement[2][0] == "binop":
+                binop = statement[2]
+                generar_intermedio_binop(binop)
+            for id in statement[1]:
+                if isinstance(id, tuple):
+                    code.append(("=",  f"t{current_register}", ' ', id[1]))
+                    continue
+                code.append(("=",  f"t{current_register}", ' ', id))
+
+        elif statement[0] == "property_asignation":  
+            pass
+        elif statement[0] == "call":
+            pass
+    print(code)
+
+def generar_intermedio_binop(binop):
+    global code, current_register
+    left, op, right = binop[1], binop[2], binop[3]
+    if left[0] != "binop" and right[0] != "binop":
+        current_register += 1
+        code.append((op, left[1], right[1], f"t{current_register}"))
+    elif left[0] != "binop" and right[0] == "binop":
+        generar_intermedio_binop(right)
+        current_register += 1
+        code.append((op, f"t{current_register-1}", left[1], f"t{current_register}"))
+    elif left[0] == "binop" and right[0] != "binop":
+        generar_intermedio_binop(left)
+        current_register += 1
+        code.append((op, f"t{current_register-1}", right[1], f"t{current_register}"))
+    elif left[0] == "binop" and right[0] == "binop":
+        generar_intermedio_binop(left)
+        generar_intermedio_binop(right)
+        current_register += 1
+        code.append((op, f"t{current_register-1}", f"t{current_register-2}", f"t{current_register}"))
+
 
 def procesar_stamentList(list):
     for statement in list:
