@@ -291,7 +291,7 @@ def procesar_simple_declaration(p):
         if id in variable_table.keys():
             raise Exception(f"Redefinition {id}")  
         variable_table[id[0]] = [None, None]  
-
+        
 def procesar_type_declaration(p1, p2):
     object_table[p1] = p2
 
@@ -326,7 +326,7 @@ def procesar_function_call(p):
     # Tratamiento de error
     if not name in variable_table.keys() or not isinstance(variable_table[name][0], dict):
         raise TypeError(f"Funtion {name} not declared")
-    if not list(variable_table[name].keys()) == FUNCTION_PROPERTIES:
+    if not list(variable_table[name][0].keys()) == FUNCTION_PROPERTIES:
         raise TypeError(f"Funtion {name} not declared")
     
     original_variable_table = variable_table.copy()

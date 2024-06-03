@@ -6,6 +6,11 @@ var1 = {
     prop1: 10e-1,
     nested: { "this is": 'A', prop2: 10, prop3: tr }
 };
+var2 = 2;
+function gte(a: int, b: int): int {
+    a = a + b;
+    return a;
+}
 
 if (gte(var1.nested["prop2"], var2)) {
     var3 = 'Y';
