@@ -25,3 +25,13 @@ myCircle = {
   radio: 10.2,
   color: 'r',
 };
+
+
+function mod(a: int, b: int): int {
+    while (a >= b) {
+        a = a-  b;
+    }
+    return a;
+}
+
+mod(a, a);

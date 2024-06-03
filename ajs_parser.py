@@ -46,11 +46,13 @@ def generar_intermedio(p):
                 code.append(('gotoc', f"t{current_register}", "L1"))
                 code.append(('label', 'L1', ))
                 generar_intermedio(stamentList)
+                code.append(('goto', 'L0'))
                 code.append(('label', 'L0', ))
             elif statement[0] == "if-else": 
                 condition, stamentListTrue, stamentListFalse = statement[1], statement[2], statement[3]
                 generar_intermedio_binop(condition)
                 code.append(('gotoc', f"t{current_register}", "L1"))
+                code.append(('goto', 'L2'))
                 code.append(('label', 'L1', ))
                 generar_intermedio(stamentListTrue)
                 code.append(('label', 'L2', ))
@@ -58,7 +60,16 @@ def generar_intermedio(p):
                 code.append(('label', 'L0', ))
                 
             elif statement[0] == "while": 
-                pass
+                condition, stamentList = statement[1], statement[2]
+                generar_intermedio_binop(condition)
+                code.append(('gotoc', f"t{current_register}", "L1"))
+                code.append(('label', 'L1', ))
+                generar_intermedio(stamentList)
+                generar_intermedio_binop(condition)
+                code.append(('gotoc', f"t{current_register}", "L1"))
+                code.append(('goto', 'L0'))
+                code.append(('label', 'L0', ))
+
             elif statement[0] == "asignation_declaration": 
                 statement = statement[1]
                 if isinstance(statement[2], dict):
@@ -111,9 +122,13 @@ def generar_intermedio(p):
                             continue
                         code.append(("=",  statement[2][1], ' ', id))
             elif statement[0] == "property_asignation":  
-                pass
+                print("asd", statement)
             elif statement[0] == "call":
-                pass
+                function_name = statement[1]
+                params = statement[2]
+                for param in params:
+                        code.append(f"param {param[1]}")
+                code.append((f"call {function_name},{len(params)}"))
     except Exception as e:
         print("Error2", e, statement)
 
